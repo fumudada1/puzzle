@@ -23,15 +23,15 @@ function html(kind, o) {
   let l, r;
   if (kind === 'home') {
     const pick = ['cat', 'apple', 'sun', 'car', 'trex', 'whale', 'rocket', 'bee', 'pizza'].map(id => imgs.find(i => i.id === id) || imgs[0]);
-    l = `<div class="txt"><div class="t">${NAME}</div><div class="s">${cats.length} 個主題・${imgs.length} 張可愛圖片<br>9／12／16 片，免費、免註冊</div></div>`;
+    l = `<div class="txt"><div class="t">${NAME}</div><div class="s">${cats.length} 個主題・${imgs.length} 張可愛圖片<br>9／12／25 片，免費、免註冊</div></div>`;
     r = `<div class="grid">${pick.map(i => `<img src="${url(i.src)}">`).join('')}</div>`;
   } else if (kind === 'cat') {
     const ims = imgs.filter(i => i.cat === o.id).slice(0, 9);
-    l = `<div class="txt"><div class="t">${o.name}拼圖</div><div class="s">${o.icon} 共 16 張圖片<br>9／12／16 片，免費免註冊</div></div>`;
+    l = `<div class="txt"><div class="t">${o.name}拼圖</div><div class="s">${o.icon} 共 16 張圖片<br>9／12／25 片，免費免註冊</div></div>`;
     r = `<div class="grid">${ims.map(i => `<img src="${url(i.src)}">`).join('')}</div>`;
   } else {
     const c = cats.find(c => c.id === o.cat);
-    l = `<div class="txt"><div class="t">${o.name}拼圖</div><div class="s">${c.icon} ${c.name}主題<br>9／12／16 片，免費免註冊</div></div>`;
+    l = `<div class="txt"><div class="t">${o.name}拼圖</div><div class="s">${c.icon} ${c.name}主題<br>9／12／25 片，免費免註冊</div></div>`;
     r = `<div class="card"><img src="${url(o.src)}"></div>`;
   }
   return `<!doctype html><meta charset="utf-8"><style>${css}</style><body><div class="brand">🧩 ${NAME}</div>${l}${r}${kind === 'home' ? '<div class="tag">適合 2～6 歲的孩子</div>' : ''}</body>`;
