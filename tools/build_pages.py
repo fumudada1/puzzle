@@ -162,9 +162,9 @@ def page(path, title, desc, body, crumbs=None, extra_head='', ad=None):
 {pwa_head(pre)}{extra_head}</head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="brand" href="{pre}index.html">🧩 {esc(NAME)}</a>
-  <nav><a href="{pre}index.html">開始玩</a><a href="{pre}parents.html">家長須知</a><a href="{pre}about.html">關於我們</a></nav>
-  <a class="homeicon" href="{pre}index.html" aria-label="回首頁" title="回首頁">🏠</a>
+  <a class="brand" href="{pre or './'}">🧩 {esc(NAME)}</a>
+  <nav><a href="{pre or './'}">開始玩</a><a href="{pre}parents.html">家長須知</a><a href="{pre}about.html">關於我們</a></nav>
+  <a class="homeicon" href="{pre or './'}" aria-label="回首頁" title="回首頁">🏠</a>
 </div></header>
 <main class="wrap">
 {crumb}
@@ -182,7 +182,7 @@ def footer(pre):
     links = ' '.join('<a href="%sc/%s.html">%s</a>' % (pre, c['id'], esc(c['name'])) for c in themes)
     return f"""<footer class="foot"><div class="wrap">
 <p><strong>全部主題：</strong>{links}</p>
-<p><a href="{pre}about.html">關於我們</a><a href="{pre}parents.html">家長須知</a><a href="{pre}privacy.html">隱私權政策</a><a href="{pre}index.html">開始玩</a></p>
+<p><a href="{pre}about.html">關於我們</a><a href="{pre}parents.html">家長須知</a><a href="{pre}privacy.html">隱私權政策</a><a href="{pre or './'}">開始玩</a></p>
 <p>© {datetime.date.today().year} {esc(NAME)}．圖片為自製插圖。</p>
 </div></footer>"""
 
@@ -196,7 +196,7 @@ n_theme, n_img = len(themes), len([i for i in imgs])
 # ---------- 各主題頁 ----------
 for idx, c in enumerate(themes):
     t = COPY[c['id']]; items = by_cat[c['id']]
-    cells = ''.join('<li><a href="../index.html?img=%s" title="玩「%s」拼圖"><figure><img src="../%s" alt="%s插圖（%s主題）" loading="lazy" decoding="async" width="200" height="200"><figcaption>%s</figcaption></figure></a></li>'
+    cells = ''.join('<li><a href="../?img=%s" title="玩「%s」拼圖"><figure><img src="../%s" alt="%s插圖（%s主題）" loading="lazy" decoding="async" width="200" height="200"><figcaption>%s</figcaption></figure></a></li>'
                     % (i['id'], esc(i['name']), i['src'], esc(i['name']), esc(c['name']), esc(i['name'])) for i in items)
     others = ''.join('<li><a href="%s.html">%s %s</a></li>' % (o['id'], o['icon'], esc(o['name'])) for o in themes if o['id'] != c['id'])
     prev_c, next_c = themes[idx - 1], themes[(idx + 1) % len(themes)]
@@ -204,7 +204,7 @@ for idx, c in enumerate(themes):
     body = f"""<h1>{c['icon']} {esc(c['name'])}拼圖</h1>
 <p class="lead">{esc(t['intro'])}</p>
 {note}
-<p><a class="cta" href="../index.html?cat={c['id']}">▶ 開始玩「{esc(c['name'])}」拼圖</a></p>
+<p><a class="cta" href="../?cat={c['id']}">▶ 開始玩「{esc(c['name'])}」拼圖</a></p>
 <p>可以選擇 9、12 或 16 片，並切換拼圖形或方塊，由簡單到困難慢慢挑戰。免費、免註冊。</p>
 <h2>這個主題裡有什麼？（共 {len(items)} 張）</h2>
 <p>點選任一張圖片，就可以直接開始拼。</p>
@@ -219,7 +219,7 @@ for idx, c in enumerate(themes):
 <p>上一個主題：<a href="{prev_c['id']}.html">{esc(prev_c['name'])}</a>　下一個主題：<a href="{next_c['id']}.html">{esc(next_c['name'])}</a></p>"""
     desc = '免費的%s幼兒拼圖：%s可選 9、12、16 片。%s' % (c['name'], '、'.join(i['name'] for i in items[:5]) + ' 等 %d 張可愛圖片，' % len(items), t['learn'][0])
     write('c/%s.html' % c['id'], page('c/%s.html' % c['id'], '%s拼圖｜%s' % (c['name'], NAME), desc, body,
-          crumbs=[('首頁', '../index.html'), ('主題', None), (c['name'], None)], ad='theme'))
+          crumbs=[('首頁', '../'), ('主題', None), (c['name'], None)], ad='theme'))
 
 # ---------- 關於我們 ----------
 about = f"""<h1>關於我們</h1>
@@ -240,7 +240,7 @@ about = f"""<h1>關於我們</h1>
 <p>如果您有建議、發現問題，或希望我們增加某個主題，歡迎聯絡我們。</p>
 <p>{contact_html()}</p>"""
 write('about.html', page('about.html', '關於我們｜' + NAME, '%s 是免費的幼兒拼圖遊戲，提供 %d 個主題、%d 張可愛圖片，適合 2～6 歲孩子在遊戲中學習。' % (NAME, n_theme, n_img), about,
-      crumbs=[('首頁', 'index.html'), ('關於我們', None)]))
+      crumbs=[('首頁', './'), ('關於我們', None)]))
 
 # ---------- 家長須知 ----------
 img_mb = '%.1f' % (sum(os.path.getsize(f) for f in glob.glob('images/*.svg')) / 1048576.0)
@@ -284,7 +284,7 @@ parents = f"""<h1>家長須知</h1>
 <dt>我想要新的主題？</dt><dd>歡迎在<a href="about.html">關於我們</a>頁面留下聯絡方式與建議。</dd>
 </dl>"""
 write('parents.html', page('parents.html', '家長須知｜' + NAME, '幼兒拼圖怎麼玩、依年齡選擇 9／12／16 片與拼圖形或方塊、螢幕使用時間提醒與常見問題，給陪伴孩子的家長。', parents,
-      crumbs=[('首頁', 'index.html'), ('家長須知', None)]))
+      crumbs=[('首頁', './'), ('家長須知', None)]))
 
 # ---------- 隱私權政策 ----------
 ads_sec = ''
@@ -313,7 +313,7 @@ privacy = f"""<h1>隱私權政策</h1>
 <h2>{'8' if ADS else '7'}. 聯絡我們</h2>
 <p>對本政策有任何疑問，歡迎與我們聯絡。{contact_html()}</p>"""
 write('privacy.html', page('privacy.html', '隱私權政策｜' + NAME, '%s 的隱私權政策：不需註冊、不蒐集個人資料，設定只儲存在您自己的裝置上。' % NAME, privacy,
-      crumbs=[('首頁', 'index.html'), ('隱私權政策', None)]))
+      crumbs=[('首頁', './'), ('隱私權政策', None)]))
 
 # ---------- sitemap.xml / robots.txt ----------
 urls = [('', '1.0')] + [('about.html', '0.5'), ('parents.html', '0.6'), ('privacy.html', '0.3')] + [('c/%s.html' % c['id'], '0.8') for c in themes]
