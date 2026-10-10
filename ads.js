@@ -2,7 +2,9 @@
  * - 預設關閉：ads-config.js 為 null 時什麼都不做，也不會連到 Google。
  * - 只有標記為 .ad-slot 的位置會放廣告：首頁（home）、App 內類別頁（category）、各主題說明頁（theme）。
  *   拼圖遊戲畫面不放廣告；廣告容器都在 #menu 內，遊戲開始時整個 #menu 會被隱藏。
- * - 不使用「自動廣告」（懸浮／置底／插頁廣告容易讓幼兒誤點）。請在 AdSense 後台關閉本網站的自動廣告。
+ * - 只做「橫幅廣告」：水平方向的顯示廣告（data-ad-format="horizontal"），不做插頁、彈出、置底懸浮、全螢幕等會打斷遊戲或容易讓幼兒誤點的形式。
+ *   請在 AdSense 後台：關閉本網站的「自動廣告」（含錨點廣告、插頁式廣告 Vignette），廣告單元類型選「展示廣告」。
+ * - 廣告位高度事先預留（避免畫面跳動），沒有廣告填入時整個廣告位自動收起。
  * - 啟用方式：site.json 設定 adsEnabled=true 與 adsense.client / adsense.slots，再執行 python3 tools/build_pages.py
  */
 (function () {
@@ -33,7 +35,7 @@
     if (el.closest('#game')) return;                   // 保險：遊戲畫面裡絕不放
     done[name] = true; loadLibrary();
     el.innerHTML = '<div class="ad-label">廣告</div><ins class="adsbygoogle" style="display:block" data-ad-client="' + cfg.client +
-      '" data-ad-slot="' + slotId + '" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+      '" data-ad-slot="' + slotId + '" data-ad-format="horizontal" data-full-width-responsive="false"></ins>';
     el.hidden = false;
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
   }
