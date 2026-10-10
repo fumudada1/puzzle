@@ -116,6 +116,11 @@ COPY = {
   talk=['哪一顆行星有漂亮的環？', '我們住在哪一顆星球？', '你想搭太空梭去哪裡？'],
   note='圖片為示意插圖，行星的大小與比例並非真實比例。'),
 }
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+from facts import FACTS, ACTIVITY
+_nofact = [i['id'] for i in imgs if i['id'] not in FACTS] + [c['id'] for c in themes if c['id'] not in ACTIVITY]
+if _nofact:
+    sys.exit('缺少小知識／延伸活動（請在 tools/facts.py 補上）：%s' % ', '.join(_nofact))
 missing = [c['id'] for c in themes if c['id'] not in COPY]
 if missing:
     sys.exit('缺少這些類別的說明文字（請在 COPY 補上）：%s' % ', '.join(missing))
@@ -234,8 +239,12 @@ for idx, c in enumerate(themes):
 <h2>這個主題裡有什麼？（共 {len(items)} 張）</h2>
 <p>點選任一張圖片，可以看圖片介紹並開始拼。</p>
 <ul class="grid">{cells}</ul>
+<h2>怎麼玩這個主題？</h2>
+<p>先從 9 片開始，熟悉了再換成 12 片或 16 片。孩子剛接觸拼圖時，可以選「方塊」和「有底圖」，上方會有淡淡的提示，比較容易成功；想增加挑戰，就改成「拼圖形」，甚至關閉底圖、只留下輪廓。大人可以陪在旁邊，孩子放對了就一起說出圖片的名字，多鼓勵、少糾正。「{esc(c['name'])}」共有 {len(items)} 張圖片，包括{esc('、'.join(i['name'] for i in items[:6]))}等，每一張都可以用 9、12、16 片來玩。</p>
 <h2>學習重點</h2>
 <ul>{''.join('<li>%s</li>' % esc(x) for x in t['learn'])}</ul>
+<h2>親子延伸活動</h2>
+<p>{esc(ACTIVITY[c['id']])}</p>
 <h2>和孩子一起聊聊</h2>
 <p>拼完之後，可以試著問孩子：</p>
 <ul>{''.join('<li>%s</li>' % esc(x) for x in t['talk'])}</ul>
@@ -263,6 +272,11 @@ for c in themes:
 <p class="lead">這是「{esc(c['name'])}」主題裡的「{esc(nm)}」。選擇 9、12 或 16 片，用手指把拼塊拖到對的位置，一起認識「{esc(nm)}」吧！免費、免註冊。</p>
 <p><a class="cta" href="../?img={im['id']}">▶ 開始玩「{esc(nm)}」拼圖</a></p>
 <figure class="hero"><img src="../{im['src']}" alt="{esc(nm)}插圖（{esc(c['name'])}主題）" width="360" height="360" decoding="async"><figcaption>{esc(nm)}</figcaption></figure>
+<h2>認識「{esc(nm)}」</h2>
+<p>{esc(FACTS[im['id']])}</p>
+<p>「{esc(nm)}」是「{esc(c['name'])}」主題裡的第 {k + 1} 張圖片（共 {len(items)} 張）。孩子可以先用 9 片練習，再慢慢挑戰 12 片和 16 片；也能在設定裡切換「拼圖形」或「方塊」，調整適合自己的難度。</p>
+<h2>怎麼拼這張圖？</h2>
+<p>先看看「{esc(nm)}」最明顯的部分在哪裡，例如最鮮豔的顏色或最特別的形狀，再把相近顏色的拼塊放在一起。拼不出來的時候，按遊戲畫面上方的 👀 可以偷看原圖。拼完之後，別忘了和孩子一起說出「{esc(nm)}」，再聊聊下面這些問題。</p>
 <h2>和孩子一起聊聊「{esc(nm)}」</h2>
 <ul>{''.join('<li>%s</li>' % esc(x) for x in t['talk'])}</ul>
 <h2>這個主題的學習重點</h2>
@@ -401,6 +415,12 @@ seo = f"""<!-- SEO:BEGIN（由 tools/build_pages.py 自動產生，請勿手動�
        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TWD"}}).strip()}
   <!-- SEO:END -->"""
 foot = f"""<!-- FOOT:BEGIN（由 tools/build_pages.py 自動產生） -->
+    <section class="site-intro">
+      <h2>免費的幼兒拼圖遊戲，在玩中認識世界</h2>
+      <p>「{esc(NAME)}」是專為 2～6 歲孩子設計的線上拼圖，不用註冊、不用安裝，手機、平板和電腦都能玩。孩子用手指把拼塊拖到對的位置，拼對會發出「叮」的聲音並固定住，放錯就輕輕彈回來，不會有挫折感。</p>
+      <p>網站目前有 {n_theme} 個主題、{n_img} 張可愛圖片，包括可愛動物、水果甜點、交通工具、遠古恐龍、海洋生物、宇宙星球等，每個主題的每一張圖都能選擇 9、12 或 16 片，並可切換拼圖形或方塊、決定要不要顯示提示底圖，讓不同年齡的孩子都能找到適合的難度。</p>
+      <p>在拼圖的同時，孩子也在認識名稱、顏色和形狀，練習專注力與手眼協調。想知道怎麼依年齡挑選難度，請看<a href="parents.html">家長須知</a>。</p>
+    </section>
     <footer class="site-foot">
       <p class="topics"><strong>全部主題：</strong>{' '.join('<a href="c/%s.html">%s</a>' % (c['id'], esc(c['name'])) for c in themes)}</p>
       <p><a href="about.html">關於我們</a>｜<a href="parents.html">家長須知</a>｜<a href="privacy.html">隱私權政策</a></p>
