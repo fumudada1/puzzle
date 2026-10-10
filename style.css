@@ -151,3 +151,8 @@ h2 { margin:18px 0 8px; font-size:1.2rem; }
 .site-intro p { margin:.5em 0; }
 .site-intro a { color:#8a4a12; }
 .site-intro .popular a { margin:0 6px; white-space:nowrap; }
+
+/* 橫幅廣告：只用水平橫幅，事先預留高度避免畫面跳動；沒有廣告填入時整個收起 */
+.ad-slot ins.adsbygoogle { display:block; width:100%; min-height:90px; max-height:120px; overflow:hidden; }
+.ad-slot ins.adsbygoogle[data-ad-status="unfilled"] { display:none; }
+.ad-slot:has(ins.adsbygoogle[data-ad-status="unfilled"]) { display:none; }

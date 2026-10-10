@@ -56,3 +56,8 @@ footer.foot p { margin:.5em 0; opacity:.85; }
 
 .rel { padding-left:1.2em; }
 .rel li { margin:.3em 0; }
+
+/* 橫幅廣告：只用水平橫幅，事先預留高度避免畫面跳動；沒有廣告填入時整個收起 */
+.ad-slot ins.adsbygoogle { display:block; width:100%; min-height:90px; max-height:120px; overflow:hidden; }
+.ad-slot ins.adsbygoogle[data-ad-status="unfilled"] { display:none; }
+.ad-slot:has(ins.adsbygoogle[data-ad-status="unfilled"]) { display:none; }
