@@ -245,12 +245,12 @@ for idx, c in enumerate(themes):
 <p class="lead">{esc(t['intro'])}</p>
 {note}
 <p><a class="cta" href="../?cat={c['id']}">▶ 開始玩「{esc(c['name'])}」拼圖</a></p>
-<p>可以選擇 9、12 或 25 片，並切換拼圖形或方塊，由簡單到困難慢慢挑戰。免費、免註冊。</p>
+<p>可以選擇 4、9、16 或 25 片，並切換拼圖形或方塊，由簡單到困難慢慢挑戰。免費、免註冊。</p>
 <h2>這個主題裡有什麼？（共 {len(items)} 張）</h2>
 <p>點選任一張圖片，可以看圖片介紹並開始拼。</p>
 <ul class="grid">{cells}</ul>
 <h2>怎麼玩這個主題？</h2>
-<p>先從 9 片開始，熟悉了再換成 12 片或 25 片。孩子剛接觸拼圖時，可以選「方塊」和「有底圖」，上方會有淡淡的提示，比較容易成功；想增加挑戰，就改成「拼圖形」，甚至關閉底圖、只留下輪廓。大人可以陪在旁邊，孩子放對了就一起說出圖片的名字，多鼓勵、少糾正。「{esc(c['name'])}」共有 {len(items)} 張圖片，包括{esc('、'.join(i['name'] for i in items[:6]))}等，每一張都可以用 9、12、25 片來玩。</p>
+<p>先從 4 片開始，熟悉了再換成 9 片、16 片或 25 片。孩子剛接觸拼圖時，可以選「方塊」和「有底圖」，上方會有淡淡的提示，比較容易成功；想增加挑戰，就改成「拼圖形」，甚至關閉底圖、只留下輪廓。大人可以陪在旁邊，孩子放對了就一起說出圖片的名字，多鼓勵、少糾正。「{esc(c['name'])}」共有 {len(items)} 張圖片，包括{esc('、'.join(i['name'] for i in items[:6]))}等，每一張都可以用 4、9、16、25 片來玩。</p>
 <h2>學習重點</h2>
 <ul>{''.join('<li>%s</li>' % esc(x) for x in t['learn'])}</ul>
 <h2>親子延伸活動</h2>
@@ -263,7 +263,7 @@ for idx, c in enumerate(themes):
 <h2>全部主題</h2>
 <ul class="chips">{others}</ul>
 <p>上一個主題：<a href="{prev_c['id']}.html">{esc(prev_c['name'])}</a>　下一個主題：<a href="{next_c['id']}.html">{esc(next_c['name'])}</a></p>"""
-    desc = '免費的%s幼兒拼圖：%s可選 9、12、25 片。%s' % (c['name'], '、'.join(i['name'] for i in items[:5]) + ' 等 %d 張可愛圖片，' % len(items), t['learn'][0])
+    desc = '免費的%s幼兒拼圖：%s可選 4、9、16、25 片。%s' % (c['name'], '、'.join(i['name'] for i in items[:5]) + ' 等 %d 張可愛圖片，' % len(items), t['learn'][0])
     write('c/%s.html' % c['id'], page('c/%s.html' % c['id'], '%s拼圖｜%s' % (c['name'], NAME), desc, body,
           crumbs=[('首頁', '../'), ('主題', None), (c['name'], None)], ad='theme',
           extra_head=ld(crumb_ld([('首頁', BASE), (c['name'] + '拼圖', BASE + 'c/%s.html' % c['id'])]),
@@ -287,12 +287,12 @@ for c in themes:
                 '<li><a href="%s.html" title="%s拼圖（%s）"><figure><img src="../%s" alt="%s插圖（%s主題）" loading="lazy" decoding="async" width="200" height="200"><figcaption>%s</figcaption></figure></a></li>'
                 % (o['id'], esc(o['name']), esc(theme_by_id[o['cat']]['name']), o['src'], esc(o['name']), esc(theme_by_id[o['cat']]['name']), esc(o['name'])) for o in xr) + '</ul>'
         body = f"""<h1>{esc(nm)}拼圖</h1>
-<p class="lead">這是「{esc(c['name'])}」主題裡的「{esc(nm)}」。選擇 9、12 或 25 片，用手指把拼塊拖到對的位置，一起認識「{esc(nm)}」吧！免費、免註冊。</p>
+<p class="lead">這是「{esc(c['name'])}」主題裡的「{esc(nm)}」。選擇 4、9、16 或 25 片，用手指把拼塊拖到對的位置，一起認識「{esc(nm)}」吧！免費、免註冊。</p>
 <p><a class="cta" href="../?img={im['id']}">▶ 開始玩「{esc(nm)}」拼圖</a></p>
 <figure class="hero"><img src="../{im['src']}" alt="{esc(nm)}插圖（{esc(c['name'])}主題）" width="360" height="360" decoding="async"><figcaption>{esc(nm)}</figcaption></figure>
 <h2>認識「{esc(nm)}」</h2>
 <p>{esc(FACTS[im['id']])}</p>
-<p>「{esc(nm)}」是「{esc(c['name'])}」主題裡的第 {k + 1} 張圖片（共 {len(items)} 張）。孩子可以先用 9 片練習，再慢慢挑戰 12 片和 25 片；也能在設定裡切換「拼圖形」或「方塊」，調整適合自己的難度。</p>
+<p>「{esc(nm)}」是「{esc(c['name'])}」主題裡的第 {k + 1} 張圖片（共 {len(items)} 張）。孩子可以先用 4 片或 9 片練習，再慢慢挑戰 16 片和 25 片；也能在設定裡切換「拼圖形」或「方塊」，調整適合自己的難度。</p>
 <h2>怎麼拼這張圖？</h2>
 <p>先看看「{esc(nm)}」最明顯的部分在哪裡，例如最鮮豔的顏色或最特別的形狀，再把相近顏色的拼塊放在一起。拼不出來的時候，按遊戲畫面上方的 👀 可以偷看原圖。拼完之後，別忘了和孩子一起說出「{esc(nm)}」，再聊聊下面這些問題。</p>
 <h2>和孩子一起聊聊「{esc(nm)}」</h2>
@@ -303,7 +303,7 @@ for c in themes:
 <ul class="grid">{rel}</ul>
 {xrel}
 <p>上一張：<a href="{prev_i['id']}.html">{esc(prev_i['name'])}</a>　下一張：<a href="{next_i['id']}.html">{esc(next_i['name'])}</a>　回到<a href="../c/{c['id']}.html">{esc(c['name'])}主題</a></p>"""
-        desc = '免費的「%s」幼兒拼圖，屬於「%s」主題，可選 9、12、25 片，免註冊、手機平板都能玩。學習重點：%s' % (nm, c['name'], t['learn'][0])
+        desc = '免費的「%s」幼兒拼圖，屬於「%s」主題，可選 4、9、16、25 片，免註冊、手機平板都能玩。學習重點：%s' % (nm, c['name'], t['learn'][0])
         write(path, page(path, '%s拼圖｜%s｜%s' % (nm, c['name'], NAME), desc, body,
               crumbs=[('首頁', '../'), (c['name'], '../c/%s.html' % c['id']), (nm, None)],
               extra_head=ld(crumb_ld([('首頁', BASE), (c['name'] + '拼圖', BASE + 'c/%s.html' % c['id']), (nm + '拼圖', url)]),
@@ -318,7 +318,7 @@ about = f"""<h1>關於我們</h1>
 <h2>網站特色</h2>
 <ul>
 <li><strong>{n_theme} 個主題、{n_img} 張圖片：</strong>每個主題 16 張，持續增加中</li>
-<li><strong>難度可選：</strong>9、12、25 片，另可切換「拼圖形」與「方塊」，也能開關上方的提示底圖</li>
+<li><strong>難度可選：</strong>4、9、16、25 片，另可切換「拼圖形」與「方塊」，也能開關上方的提示底圖</li>
 <li><strong>專為幼兒設計：</strong>拼塊大、吸附範圍寬鬆，放錯會輕輕彈回，不會有負面提示；完成時有音效與慶祝動畫</li>
 <li><strong>免費、免註冊：</strong>手機、平板、電腦都能直接玩，不需要安裝</li>
 <li><strong>不蒐集孩子的資料：</strong>詳見<a href="privacy.html">隱私權政策</a></li>
@@ -349,12 +349,12 @@ parents = f"""<h1>家長須知</h1>
 <table>
 <thead><tr><th>年齡</th><th>片數</th><th>形狀</th><th>上方底圖</th><th>推薦主題</th></tr></thead>
 <tbody>
-<tr><td>約 2～3 歲</td><td>9 片</td><td>方塊</td><td>有底圖</td><td><a href="c/animal.html">可愛動物</a>、<a href="c/fruit.html">水果甜點</a></td></tr>
-<tr><td>約 3～4 歲</td><td>9～12 片</td><td>拼圖形</td><td>有底圖</td><td><a href="c/vehicle.html">交通工具</a>、<a href="c/life.html">日常生活</a></td></tr>
-<tr><td>約 4～5 歲</td><td>12 片</td><td>拼圖形</td><td>有底圖</td><td><a href="c/dino.html">遠古恐龍</a>、<a href="c/ocean.html">海洋生物</a></td></tr>
-<tr><td>約 5～6 歲</td><td>25 片</td><td>拼圖形</td><td>無底圖（進階挑戰）</td><td><a href="c/learn.html">學習認知</a>、<a href="c/space.html">宇宙星球</a></td></tr>
+<tr><td>約 2～3 歲</td><td>4～9 片</td><td>方塊</td><td>有底圖</td><td><a href="c/animal.html">可愛動物</a>、<a href="c/fruit.html">水果甜點</a></td></tr>
+<tr><td>約 3～4 歲</td><td>9 片</td><td>拼圖形</td><td>有底圖</td><td><a href="c/vehicle.html">交通工具</a>、<a href="c/life.html">日常生活</a></td></tr>
+<tr><td>約 4～5 歲</td><td>9～16 片</td><td>拼圖形</td><td>有底圖</td><td><a href="c/dino.html">遠古恐龍</a>、<a href="c/ocean.html">海洋生物</a></td></tr>
+<tr><td>約 5～6 歲</td><td>16～25 片</td><td>拼圖形</td><td>無底圖（進階挑戰）</td><td><a href="c/learn.html">學習認知</a>、<a href="c/space.html">宇宙星球</a></td></tr>
 </tbody></table>
-<p>設定方式：首頁右上角的 ⚙️ 可以選擇「拼圖形／方塊」與「有底圖／無底圖」；片數則在拼圖畫面上方切換 9、12、25 片。</p>
+<p>設定方式：首頁右上角的 ⚙️ 可以選擇「拼圖形／方塊」與「有底圖／無底圖」；片數則在拼圖畫面上方切換 4、9、16、25 片。</p>
 <h2>親子共玩小技巧</h2>
 <ul>
 <li><strong>一起玩，邊玩邊聊：</strong>每個<a href="c/animal.html">主題頁</a>都附有「和孩子一起聊聊」的問題，可以在拼完後延伸對話。</li>
@@ -374,7 +374,7 @@ parents = f"""<h1>家長須知</h1>
 <dt>圖片可以拿去使用嗎？</dt><dd>網站圖片為自製插圖，以 CC0 公眾領域貢獻釋出，可自由使用。</dd>
 <dt>我想要新的主題？</dt><dd>歡迎在<a href="about.html">關於我們</a>頁面留下聯絡方式與建議。</dd>
 </dl>"""
-write('parents.html', page('parents.html', '家長須知｜' + NAME, '幼兒拼圖怎麼玩、依年齡選擇 9／12／25 片與拼圖形或方塊、螢幕使用時間提醒與常見問題，給陪伴孩子的家長。', parents,
+write('parents.html', page('parents.html', '家長須知｜' + NAME, '幼兒拼圖怎麼玩、依年齡選擇 4／9／16／25 片與拼圖形或方塊、螢幕使用時間提醒與常見問題，給陪伴孩子的家長。', parents,
       crumbs=[('首頁', './'), ('家長須知', None)]))
 
 # ---------- 隱私權政策 ----------
@@ -420,9 +420,9 @@ elif os.path.exists('CNAME'):
 write('robots.txt', 'User-agent: *\nAllow: /\n\nSitemap: %ssitemap.xml\n' % BASE)
 
 # ---------- 更新 index.html 的 SEO 區塊 ----------
-home_desc = '免費的幼兒拼圖遊戲：%d 個主題、%d 張可愛圖片，可選 9、12、25 片，支援拼圖形與方塊。適合 2～6 歲孩子認識動物、水果、交通工具、恐龍、宇宙等，免註冊、手機平板電腦都能玩。' % (n_theme, n_img)
+home_desc = '免費的幼兒拼圖遊戲：%d 個主題、%d 張可愛圖片，可選 4、9、16、25 片，支援拼圖形與方塊。適合 2～6 歲孩子認識動物、水果、交通工具、恐龍、宇宙等，免註冊、手機平板電腦都能玩。' % (n_theme, n_img)
 seo = f"""<!-- SEO:BEGIN（由 tools/build_pages.py 自動產生，請勿手動修改） -->
-  <title>{esc(NAME)}｜免費幼兒拼圖遊戲（9／12／25 片）</title>
+  <title>{esc(NAME)}｜免費幼兒拼圖遊戲（4／9／16／25 片）</title>
   <meta name="description" content="{esc(home_desc)}">
   <link rel="canonical" href="{esc(BASE)}">
   <meta name="robots" content="index,follow">
@@ -446,7 +446,7 @@ foot = f"""<!-- FOOT:BEGIN（由 tools/build_pages.py 自動產生） -->
     <section class="site-intro">
       <h2>免費的幼兒拼圖遊戲，在玩中認識世界</h2>
       <p>「{esc(NAME)}」是專為 2～6 歲孩子設計的線上拼圖，不用註冊、不用安裝，手機、平板和電腦都能玩。孩子用手指把拼塊拖到對的位置，拼對會發出「叮」的聲音並固定住，放錯就輕輕彈回來，不會有挫折感。</p>
-      <p>網站目前有 {n_theme} 個主題、{n_img} 張可愛圖片，包括<a href="c/animal.html">可愛動物</a>、<a href="c/fruit.html">水果甜點</a>、<a href="c/vehicle.html">交通工具</a>、<a href="c/dino.html">遠古恐龍</a>、<a href="c/ocean.html">海洋生物</a>、<a href="c/space.html">宇宙星球</a>等，每個主題的每一張圖都能選擇 9、12 或 25 片，並可切換拼圖形或方塊、決定要不要顯示提示底圖，讓不同年齡的孩子都能找到適合的難度。</p>
+      <p>網站目前有 {n_theme} 個主題、{n_img} 張可愛圖片，包括<a href="c/animal.html">可愛動物</a>、<a href="c/fruit.html">水果甜點</a>、<a href="c/vehicle.html">交通工具</a>、<a href="c/dino.html">遠古恐龍</a>、<a href="c/ocean.html">海洋生物</a>、<a href="c/space.html">宇宙星球</a>等，每個主題的每一張圖都能選擇 4、9、16 或 25 片，並可切換拼圖形或方塊、決定要不要顯示提示底圖，讓不同年齡的孩子都能找到適合的難度。</p>
       <p>在拼圖的同時，孩子也在認識名稱、顏色和形狀，練習專注力與手眼協調。想知道怎麼依年齡挑選難度，請看<a href="parents.html">家長須知</a>。</p>
       <p class="popular"><strong>熱門拼圖：</strong>{' '.join('<a href="p/%s.html">%s拼圖</a>' % (i, esc(by_id[i]['name'])) for i in POPULAR)}</p>
     </section>

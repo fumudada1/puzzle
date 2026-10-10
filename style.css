@@ -157,7 +157,7 @@ h2 { margin:18px 0 8px; font-size:1.2rem; }
 .ad-slot ins.adsbygoogle[data-ad-status="unfilled"] { display:none; }
 .ad-slot:has(ins.adsbygoogle[data-ad-status="unfilled"]) { display:none; }
 
-/* 窄螢幕：按鈕與 9／12／16 縮小，才能全部排在同一列、又不蓋到右上角的 🏠 */
+/* 窄螢幕：按鈕與 4／9／16／25 縮小，才能全部排在同一列、又不蓋到右上角的 🏠 */
 @media (max-width: 540px) {
   .bar { gap:4px; padding-right:68px; }
   .bar .btn { min-width:38px; height:38px; padding:0 4px; font-size:1.2rem; border-radius:12px; }
@@ -165,8 +165,13 @@ h2 { margin:18px 0 8px; font-size:1.2rem; }
   .gs { height:34px; min-width:32px; padding:0 4px; font-size:1rem; border-radius:11px; }
   .bar .homeg { right:6px; top:4px; }
 }
+@media (max-width: 380px) {
+  .bar .btn { min-width:36px; height:36px; }
+  .gs { min-width:28px; padding:0 3px; }
+}
 @media (max-width: 340px) {
-  .bar { padding-right:60px; }
-  .bar .btn { min-width:34px; height:34px; font-size:1.05rem; }
-  .gs { min-width:28px; font-size:.9rem; }
+  .bar { padding-right:56px; gap:3px; }
+  .bar .btn { min-width:30px; height:30px; font-size:1rem; }
+  .gs { min-width:24px; height:30px; font-size:.85rem; padding:0 2px; }
+  .gsizes { gap:1px; padding:2px; }
 }

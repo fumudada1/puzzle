@@ -6,7 +6,7 @@
   var menu = $('menu'), game = $('game'), stage = $('stage'), board = $('board'), win = $('win');
 
   // 片數 → [直向或橫向] 的格子配置
-  var SIZES = [9, 12, 25];
+  var SIZES = [4, 9, 16, 25];
   var state = { count: 9, imgIndex: 0, cols: 3, rows: 3, pieces: [], c: 0, bx: 0, by: 0,
                 tray: null, t: 1, soundOn: true, solved: 0, cat: 'new', menuScroll: 0, jigsaw: true, showBase: true, pad: 0, B: 0 };
 
@@ -215,10 +215,8 @@
     document.getElementById('gameTitle').textContent = IMAGES[imgIndex].name;
     buildGameSizes();
     menu.classList.add('hidden'); game.classList.remove('hidden'); win.classList.add('hidden');
-    // 直式螢幕 12 片用 3 欄×4 列，橫式用 4 欄×3 列
-    var portrait = stage.clientWidth < stage.clientHeight * 1.1;
     var n = state.count;
-    state.cols = n === 9 ? 3 : n === 25 ? 5 : (portrait ? 3 : 4);
+    state.cols = Math.round(Math.sqrt(n));   // 4、9、16、25 片都是正方形排列（2×2、3×3、4×4、5×5）
     state.rows = n / state.cols;
     buildPieces();
     layout(true);
