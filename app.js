@@ -201,7 +201,7 @@
     SIZES.forEach(function (n) {
       var b = document.createElement('button');
       b.className = 'gs' + (n === state.count ? ' on' : '');
-      b.textContent = n + '片';
+      b.textContent = n; b.setAttribute('aria-label', n + ' 片');
       b.onclick = function () {
         if (n === state.count) return;
         state.count = n; save('puzzleCount', n); start(state.imgIndex);
@@ -311,13 +311,21 @@
     Object.assign(state, { c: c, bx: bx, by: by, tray: tray, pad: pad, B: B });
     var gap = state.jigsaw ? 1.3 : 1;   // 凸塊會突出去，待放區間距要留大一點
 
-    // 找出放得下的縮放比例，讓待放區的拼塊能全部排進去
-    var n = state.count, t = 1, perRow = 1;
-    for (t = 1; t > 0.3; t -= 0.02) {
-      perRow = Math.max(1, Math.floor(tray.w / (c * t * gap)));
-      if (Math.ceil(n / perRow) * c * t * gap <= tray.h) break;
+    // 待放區的拼塊和上面的拼圖一樣大；放不下時不縮小，而是讓拼塊互相重疊（愈後面的疊在愈上面）
+    var n = state.count, nominal = c * gap, inset = pad;
+    var aw = tray.w - 2 * inset, ah = tray.h - 2 * inset, best = null, pr, ru, sx, sy, ratio;
+    for (pr = 1; pr <= n; pr++) {
+      ru = Math.ceil(n / pr);
+      sx = pr > 1 ? Math.max(c * 0.15, Math.min(nominal, (aw - c) / (pr - 1))) : 0;
+      sy = ru > 1 ? Math.max(c * 0.15, Math.min(nominal, (ah - c) / (ru - 1))) : 0;
+      ratio = Math.min(pr > 1 ? sx / nominal : 1, ru > 1 ? sy / nominal : 1);
+      if (!best || ratio > best.ratio + 1e-6) best = { pr: pr, ru: ru, sx: sx, sy: sy, ratio: ratio };
     }
+    var t = 1, perRow = best.pr;
     state.t = t; state.perRow = perRow;
+    var gridW = c + (perRow - 1) * best.sx, gridH = c + (best.ru - 1) * best.sy;
+    var gx = tray.x + (tray.w - gridW) / 2 + c / 2, gy = tray.y + (tray.h - gridH) / 2 + c / 2;
+    state.slotAt = function (i) { return { x: gx + (i % perRow) * best.sx, y: gy + Math.floor(i / perRow) * best.sy }; };
 
     var bw = c * cols, bh = c * rows, D = Math.max(bw, bh), ox = (bw - D) / 2, oy = (bh - D) / 2;
     board.style.cssText = 'left:' + bx + 'px;top:' + by + 'px;width:' + bw + 'px;height:' + bh + 'px';
@@ -327,11 +335,6 @@
     board.querySelectorAll('.cell').forEach(function (e) {
       e.style.cssText = 'left:' + e.dataset.c * c + 'px;top:' + e.dataset.r * c + 'px;width:' + c + 'px;height:' + c + 'px';
     });
-
-    var rowsUsed = Math.ceil(n / perRow), slotW = c * t * gap;
-    var gridW = Math.min(perRow, n) * slotW, gridH = rowsUsed * slotW;
-    var sx = tray.x + (tray.w - gridW) / 2, sy = tray.y + (tray.h - gridH) / 2;
-    state.slotAt = function (i) { return { x: sx + (i % perRow + 0.5) * slotW, y: sy + (Math.floor(i / perRow) + 0.5) * slotW }; };
 
     state.pieces.forEach(function (p) {
       var el = p.el, d = piecePath(p, pad, c);
