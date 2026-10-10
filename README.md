@@ -22,6 +22,7 @@
 1. 圖片（SVG，建議 600×600、主體放在中間）放進 `images/`
 2. 在 `images.js` 加入類別（`PUZZLE_CATEGORIES`）與圖片（`PUZZLE_IMAGES`，`seq` 填目前最大序號 + 1，會自動出現在「最新圖片」）
 3. 若是新類別，在 `tools/build_pages.py` 的 `COPY` 補上該類別的說明文字
+   （新增圖片／類別後，先執行 `NODE_PATH=$(npm root -g) node tools/make_og.js` 產生分享預覽圖 `og/*.png`，需要 playwright 與 Pillow）
 4. 執行 `python3 tools/build_pages.py`，重新產生靜態頁、網站地圖、`sw.js` 與資源版本號
 
 > `index.html` 內 `SEO:BEGIN~END`、`FOOT:BEGIN~END` 區塊與 `sw.js`、`sitemap.xml`、`c/*.html` 等都是產生的檔案，請改來源（`site.json`、`tools/`、`images.js`）後重跑建置，不要直接手改。
