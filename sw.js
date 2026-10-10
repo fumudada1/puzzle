@@ -3,10 +3,11 @@
  *  - 安裝時預先快取「遊戲本體」（網頁、程式、樣式、圖示），讓沒有網路時也能開啟。
  *  - 圖片：先看快取、沒有再上網抓並存起來（看過的圖片之後就不用再下載）。
  *  - 其他檔案：先上網抓最新版（確保更新），沒網路才用快取。
- *  - 版本號由檔案內容雜湊決定；內容一變，舊快取會自動清掉。
+ *  - 遊戲本體的版本號由檔案內容雜湊決定；內容一變，舊快取會自動清掉。
+ *  - 圖片快取名稱固定（site.json 的 imageCacheVersion）：新增圖片不會清掉舊圖片；只有修改既有圖片時才需要升版。
  */
 const SHELL_CACHE = 'puzzle-shell-bec228864b';
-const IMG_CACHE = 'puzzle-img-1292aaadd7';
+const IMG_CACHE = 'puzzle-img-v1';
 const SHELL_FILES = ["./", "index.html", "about.html", "parents.html", "privacy.html", "style.css", "pages.css", "app.js", "images.js", "ads.js", "ads-config.js", "manifest.webmanifest", "c/animal.html", "c/bug.html", "c/dino.html", "c/festival.html", "c/food.html", "c/fruit.html", "c/job.html", "c/learn.html", "c/life.html", "c/music.html", "c/nature.html", "c/ocean.html", "c/space.html", "c/sport.html", "c/story.html", "c/vehicle.html", "icons/apple-touch-icon.png", "icons/favicon-32.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/icon.svg"];
 
 self.addEventListener('install', (e) => {
