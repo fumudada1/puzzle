@@ -22,7 +22,7 @@ p, li { margin:.4em 0; }
 .cta:active { transform:translateY(3px); box-shadow:none; }
 .grid { list-style:none; padding:0; margin:12px 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px; }
 .grid a { display:block; background:var(--card); border-radius:16px; overflow:hidden; text-decoration:none; color:var(--ink); box-shadow:0 3px 0 var(--line); text-align:center; font-weight:700; }
-.grid img { width:100%; aspect-ratio:1; object-fit:cover; display:block; }
+.grid img { width:100%; height:auto; aspect-ratio:1; object-fit:cover; display:block; }
 .grid figure { margin:0; }
 .grid figcaption { display:block; padding:6px 4px 8px; }
 .chips { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; padding:0; list-style:none; }

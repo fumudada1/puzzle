@@ -24,7 +24,7 @@ h2 { margin:18px 0 8px; font-size:1.2rem; }
 .thumb:active, .size-btn:active { transform: translateY(3px); box-shadow:none; }
 
 /* 遊戲 */
-:root { --barH: 116px; }
+:root { --barH: 116px; --titleH: 40px; }
 @media (min-width: 720px) { :root { --barH: 64px; } }   /* 寬螢幕：按鈕與片數排同一列 */
 .bar { position:absolute; top:0; left:0; right:0; height:var(--barH); display:flex; flex-wrap:wrap; gap:8px 10px;
   align-items:center; justify-content:center; align-content:center; z-index:50; }
@@ -35,7 +35,8 @@ h2 { margin:18px 0 8px; font-size:1.2rem; }
   background:#fff; box-shadow:0 3px 0 #e5d6ad; color:var(--ink); }
 .btn.big { font-size:1.3rem; height:60px; background:var(--pri2); }
 .btn:active { transform: translateY(3px); box-shadow:none; }
-.stage { position:absolute; left:0; right:0; top:var(--barH); bottom:0; }
+.stage { position:absolute; left:0; right:0; top:calc(var(--barH) + var(--titleH)); bottom:0; }
+.gtitle { position:absolute; left:0; right:0; top:var(--barH); height:var(--titleH); margin:0; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:800; color:var(--ink); pointer-events:none; }
 .board { position:absolute; background:rgba(255,255,255,.55); outline:4px dashed #d6c28a; outline-offset:0;
   border-radius:12px; overflow:hidden; }
 .board .ghost { position:absolute; inset:0; opacity:.22; background-repeat:no-repeat; transition:opacity .3s; }

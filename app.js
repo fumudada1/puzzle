@@ -212,6 +212,7 @@
 
   function start(imgIndex, how) {
     state.imgIndex = imgIndex;
+    document.getElementById('gameTitle').textContent = IMAGES[imgIndex].name;
     buildGameSizes();
     menu.classList.add('hidden'); game.classList.remove('hidden'); win.classList.add('hidden');
     // 直式螢幕 12 片用 3 欄×4 列，橫式用 4 欄×3 列
