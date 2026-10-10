@@ -102,6 +102,14 @@
     if (how === 'push') { depth++; history.pushState({ app: 1, n: depth }, '', viewUrl(v, p)); }
     else if (how === 'replace') history.replaceState({ app: 1, n: depth }, '', viewUrl(v, p));
     document.title = title;
+    setCanonical(v, p);
+  }
+  // canonical 指到對應的靜態頁（搜尋引擎只收錄靜態頁；?cat=、?img= 是同一內容的互動版本）
+  var canonEl = document.querySelector('link[rel="canonical"]');
+  var canonHome = canonEl && canonEl.href;
+  function setCanonical(v, p) {
+    if (!canonEl || !canonHome) return;
+    canonEl.href = v === 'cat' ? canonHome + 'c/' + p + '.html' : v === 'game' ? canonHome + 'p/' + p + '.html' : canonHome;
   }
   // 返回：站內有上一頁就用瀏覽器的上一頁（畫面由 popstate 切換）；否則（例如從搜尋結果直接進來）改為切到指定畫面
   function goBack(fallback) { if (depth > 0) history.back(); else fallback(); }

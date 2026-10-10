@@ -2,7 +2,7 @@
 """由 images.js + site.json 產生靜態內容頁（給搜尋引擎與家長閱讀）。
 
 用法（在專案根目錄執行）：  python3 tools/build_pages.py
-會產生／更新：about.html、parents.html、privacy.html、c/<類別>.html、sitemap.xml、robots.txt，
+會產生／更新：about.html、parents.html、privacy.html、c/<類別>.html、p/<圖片>.html、sitemap.xml、robots.txt，
 並更新 index.html 內 SEO:BEGIN~END 區塊。新增類別或圖片後重跑即可。
 設定在 site.json：網域 baseUrl、聯絡信箱 contactEmail、是否已啟用廣告 adsEnabled。
 """
@@ -186,6 +186,14 @@ def footer(pre):
 <p>© {datetime.date.today().year} {esc(NAME)}．圖片為自製插圖。</p>
 </div></footer>"""
 
+def ld(*objs):
+    """結構化資料（JSON-LD）"""
+    return ''.join('<script type="application/ld+json">%s</script>\n' % json.dumps(dict({"@context": "https://schema.org"}, **o), ensure_ascii=False).replace('</', '<\\/') for o in objs)
+
+def crumb_ld(items):
+    return {"@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": n + 1, "name": t, "item": u} for n, (t, u) in enumerate(items)]}
+
 def write(path, text):
     d = os.path.dirname(path)
     if d: os.makedirs(d, exist_ok=True)
@@ -196,7 +204,7 @@ n_theme, n_img = len(themes), len([i for i in imgs])
 # ---------- 各主題頁 ----------
 for idx, c in enumerate(themes):
     t = COPY[c['id']]; items = by_cat[c['id']]
-    cells = ''.join('<li><a href="../?img=%s" title="玩「%s」拼圖"><figure><img src="../%s" alt="%s插圖（%s主題）" loading="lazy" decoding="async" width="200" height="200"><figcaption>%s</figcaption></figure></a></li>'
+    cells = ''.join('<li><a href="../p/%s.html" title="玩「%s」拼圖"><figure><img src="../%s" alt="%s插圖（%s主題）" loading="lazy" decoding="async" width="200" height="200"><figcaption>%s</figcaption></figure></a></li>'
                     % (i['id'], esc(i['name']), i['src'], esc(i['name']), esc(c['name']), esc(i['name'])) for i in items)
     others = ''.join('<li><a href="%s.html">%s %s</a></li>' % (o['id'], o['icon'], esc(o['name'])) for o in themes if o['id'] != c['id'])
     prev_c, next_c = themes[idx - 1], themes[(idx + 1) % len(themes)]
@@ -207,7 +215,7 @@ for idx, c in enumerate(themes):
 <p><a class="cta" href="../?cat={c['id']}">▶ 開始玩「{esc(c['name'])}」拼圖</a></p>
 <p>可以選擇 9、12 或 16 片，並切換拼圖形或方塊，由簡單到困難慢慢挑戰。免費、免註冊。</p>
 <h2>這個主題裡有什麼？（共 {len(items)} 張）</h2>
-<p>點選任一張圖片，就可以直接開始拼。</p>
+<p>點選任一張圖片，可以看圖片介紹並開始拼。</p>
 <ul class="grid">{cells}</ul>
 <h2>學習重點</h2>
 <ul>{''.join('<li>%s</li>' % esc(x) for x in t['learn'])}</ul>
@@ -219,7 +227,40 @@ for idx, c in enumerate(themes):
 <p>上一個主題：<a href="{prev_c['id']}.html">{esc(prev_c['name'])}</a>　下一個主題：<a href="{next_c['id']}.html">{esc(next_c['name'])}</a></p>"""
     desc = '免費的%s幼兒拼圖：%s可選 9、12、16 片。%s' % (c['name'], '、'.join(i['name'] for i in items[:5]) + ' 等 %d 張可愛圖片，' % len(items), t['learn'][0])
     write('c/%s.html' % c['id'], page('c/%s.html' % c['id'], '%s拼圖｜%s' % (c['name'], NAME), desc, body,
-          crumbs=[('首頁', '../'), ('主題', None), (c['name'], None)], ad='theme'))
+          crumbs=[('首頁', '../'), ('主題', None), (c['name'], None)], ad='theme',
+          extra_head=ld(crumb_ld([('首頁', BASE), (c['name'] + '拼圖', BASE + 'c/%s.html' % c['id'])]),
+                        {"@type": "CollectionPage", "name": '%s拼圖' % c['name'], "url": BASE + 'c/%s.html' % c['id'], "inLanguage": "zh-Hant",
+                         "isPartOf": {"@type": "WebSite", "name": NAME, "url": BASE},
+                         "mainEntity": {"@type": "ItemList", "numberOfItems": len(items), "itemListElement": [
+                             {"@type": "ListItem", "position": n + 1, "url": BASE + 'p/%s.html' % i['id'], "name": i['name'] + '拼圖'} for n, i in enumerate(items)]}})))
+
+# ---------- 每張圖片的獨立頁 p/<id>.html ----------
+for c in themes:
+    items = by_cat[c['id']]; t = COPY[c['id']]
+    for k, im in enumerate(items):
+        nm = im['name']; path = 'p/%s.html' % im['id']; url = BASE + path
+        prev_i, next_i = items[k - 1], items[(k + 1) % len(items)]
+        rel = ''.join('<li><a href="%s.html" title="%s拼圖"><figure><img src="../%s" alt="%s插圖（%s主題）" loading="lazy" decoding="async" width="200" height="200"><figcaption>%s</figcaption></figure></a></li>'
+                      % (o['id'], esc(o['name']), o['src'], esc(o['name']), esc(c['name']), esc(o['name'])) for o in items if o is not im)
+        body = f"""<h1>{esc(nm)}拼圖</h1>
+<p class="lead">這是「{esc(c['name'])}」主題裡的「{esc(nm)}」。選擇 9、12 或 16 片，用手指把拼塊拖到對的位置，一起認識「{esc(nm)}」吧！免費、免註冊。</p>
+<p><a class="cta" href="../?img={im['id']}">▶ 開始玩「{esc(nm)}」拼圖</a></p>
+<figure class="hero"><img src="../{im['src']}" alt="{esc(nm)}插圖（{esc(c['name'])}主題）" width="360" height="360" decoding="async"><figcaption>{esc(nm)}</figcaption></figure>
+<h2>和孩子一起聊聊「{esc(nm)}」</h2>
+<ul>{''.join('<li>%s</li>' % esc(x) for x in t['talk'])}</ul>
+<h2>這個主題的學習重點</h2>
+<ul>{''.join('<li>%s</li>' % esc(x) for x in t['learn'])}</ul>
+<h2>同主題的其他拼圖</h2>
+<ul class="grid">{rel}</ul>
+<p>上一張：<a href="{prev_i['id']}.html">{esc(prev_i['name'])}</a>　下一張：<a href="{next_i['id']}.html">{esc(next_i['name'])}</a>　回到<a href="../c/{c['id']}.html">{esc(c['name'])}主題</a></p>"""
+        desc = '免費的「%s」幼兒拼圖，屬於「%s」主題，可選 9、12、16 片，免註冊、手機平板都能玩。學習重點：%s' % (nm, c['name'], t['learn'][0])
+        write(path, page(path, '%s拼圖｜%s｜%s' % (nm, c['name'], NAME), desc, body,
+              crumbs=[('首頁', '../'), (c['name'], '../c/%s.html' % c['id']), (nm, None)],
+              extra_head=ld(crumb_ld([('首頁', BASE), (c['name'] + '拼圖', BASE + 'c/%s.html' % c['id']), (nm + '拼圖', url)]),
+                            {"@type": "ImageObject", "contentUrl": BASE + im['src'], "name": nm + '插圖', "description": '%s插圖（%s主題）' % (nm, c['name']),
+                             "inLanguage": "zh-Hant", "license": "https://creativecommons.org/publicdomain/zero/1.0/", "creator": {"@type": "Organization", "name": NAME},
+                             "acquireLicensePage": BASE + 'about.html', "representativeOfPage": True})))
+
 
 # ---------- 關於我們 ----------
 about = f"""<h1>關於我們</h1>
@@ -316,7 +357,7 @@ write('privacy.html', page('privacy.html', '隱私權政策｜' + NAME, '%s 的�
       crumbs=[('首頁', './'), ('隱私權政策', None)]))
 
 # ---------- sitemap.xml / robots.txt ----------
-urls = [('', '1.0')] + [('about.html', '0.5'), ('parents.html', '0.6'), ('privacy.html', '0.3')] + [('c/%s.html' % c['id'], '0.8') for c in themes]
+urls = [('', '1.0')] + [('about.html', '0.5'), ('parents.html', '0.6'), ('privacy.html', '0.3')] + [('c/%s.html' % c['id'], '0.8') for c in themes] + [('p/%s.html' % i['id'], '0.6') for c in themes for i in by_cat[c['id']]]
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
       ''.join('  <url><loc>%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>\n' % (esc(BASE + u), TODAY, p) for u, p in urls) + '</urlset>\n')
 write('robots.txt', 'User-agent: *\nAllow: /\n\nSitemap: %ssitemap.xml\n' % BASE)
@@ -336,6 +377,10 @@ seo = f"""<!-- SEO:BEGIN（由 tools/build_pages.py 自動產生，請勿手動�
   <meta property="og:description" content="{esc(home_desc)}">
   <meta property="og:url" content="{esc(BASE)}">
   {pwa_head('').strip().replace(chr(10), chr(10) + '  ')}
+  {ld({"@type": "WebSite", "name": NAME, "url": BASE, "inLanguage": "zh-Hant", "description": home_desc},
+      {"@type": ["WebApplication", "Game"], "name": NAME, "url": BASE, "applicationCategory": "GameApplication", "genre": "Puzzle",
+       "operatingSystem": "Any", "inLanguage": "zh-Hant", "isAccessibleForFree": True, "audience": {"@type": "PeopleAudience", "suggestedMinAge": 2, "suggestedMaxAge": 6},
+       "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TWD"}}).strip()}
   <!-- SEO:END -->"""
 foot = f"""<!-- FOOT:BEGIN（由 tools/build_pages.py 自動產生） -->
     <footer class="site-foot">
