@@ -3,7 +3,7 @@
 
 用法（在專案根目錄執行）：  python3 tools/build_pages.py
 會產生／更新：about.html、parents.html、privacy.html、c/<類別>.html、p/<圖片>.html、sitemap.xml、robots.txt，
-並更新 index.html 內 SEO:BEGIN~END 區塊。新增類別或圖片後重跑即可。
+（分享預覽圖 og/*.png 由 tools/make_og.js 產生）並更新 index.html 內 SEO:BEGIN~END 區塊。新增類別或圖片後重跑即可。
 設定在 site.json：網域 baseUrl、聯絡信箱 contactEmail、是否已啟用廣告 adsEnabled。
 """
 import datetime, html, json, os, re, sys
@@ -137,6 +137,23 @@ def pwa_head(pre):
 <meta name="apple-mobile-web-app-title" content="{esc(SHORT)}">
 '''
 
+def og_tags(title, desc, url, img):
+    i = BASE + img
+    return f'''<meta property="og:image" content="{esc(i)}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{esc(title)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{esc(title)}">
+<meta name="twitter:description" content="{esc(desc)}">
+<meta name="twitter:image" content="{esc(i)}">
+'''
+
+def og_for(path):
+    if path.startswith('c/'): return 'og/c-%s.png' % path[2:-5]
+    if path.startswith('p/'): return 'og/p-%s.png' % path[2:-5]
+    return 'og/home.png'
+
 def page(path, title, desc, body, crumbs=None, extra_head='', ad=None):
     pre = '../' * path.count('/')
     url = BASE + path
@@ -158,7 +175,7 @@ def page(path, title, desc, body, crumbs=None, extra_head='', ad=None):
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:url" content="{esc(url)}">
-<link rel="stylesheet" href="{pre}pages.css?v={ASSET_VER}">
+{og_tags(title, desc, url, og_for(path))}<link rel="stylesheet" href="{pre}pages.css?v={ASSET_VER}">
 {pwa_head(pre)}{extra_head}</head>
 <body>
 <header class="top"><div class="wrap">
@@ -376,6 +393,7 @@ seo = f"""<!-- SEO:BEGIN（由 tools/build_pages.py 自動產生，請勿手動�
   <meta property="og:title" content="{esc(NAME)}｜免費幼兒拼圖遊戲">
   <meta property="og:description" content="{esc(home_desc)}">
   <meta property="og:url" content="{esc(BASE)}">
+  {og_tags(NAME + '｜免費幼兒拼圖遊戲', home_desc, BASE, 'og/home.png').strip().replace(chr(10), chr(10) + '  ')}
   {pwa_head('').strip().replace(chr(10), chr(10) + '  ')}
   {ld({"@type": "WebSite", "name": NAME, "url": BASE, "inLanguage": "zh-Hant", "description": home_desc},
       {"@type": ["WebApplication", "Game"], "name": NAME, "url": BASE, "applicationCategory": "GameApplication", "genre": "Puzzle",
