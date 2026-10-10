@@ -117,7 +117,7 @@ COPY = {
   note='圖片為示意插圖，行星的大小與比例並非真實比例。'),
 }
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
-from facts import FACTS, ACTIVITY
+from facts import FACTS, ACTIVITY, RELATED_THEMES, IMAGE_GROUPS
 _nofact = [i['id'] for i in imgs if i['id'] not in FACTS] + [c['id'] for c in themes if c['id'] not in ACTIVITY]
 if _nofact:
     sys.exit('缺少小知識／延伸活動（請在 tools/facts.py 補上）：%s' % ', '.join(_nofact))
@@ -222,6 +222,15 @@ def write(path, text):
     open(path, 'w', encoding='utf-8').write(text)
 
 n_theme, n_img = len(themes), len([i for i in imgs])
+by_id = {i['id']: i for i in imgs}
+theme_by_id = {c['id']: c for c in themes}
+def related_images(im, limit=6):
+    out = []
+    for g in IMAGE_GROUPS:
+        if im['id'] in g:
+            for o in g:
+                if o != im['id'] and by_id[o]['cat'] != im['cat'] and o not in out: out.append(o)
+    return [by_id[o] for o in out[:limit]]
 
 # ---------- 各主題頁 ----------
 for idx, c in enumerate(themes):
@@ -230,6 +239,7 @@ for idx, c in enumerate(themes):
                     % (i['id'], esc(i['name']), i['src'], esc(i['name']), esc(c['name']), esc(i['name'])) for i in items)
     others = ''.join('<li><a href="%s.html">%s %s</a></li>' % (o['id'], o['icon'], esc(o['name'])) for o in themes if o['id'] != c['id'])
     prev_c, next_c = themes[idx - 1], themes[(idx + 1) % len(themes)]
+    rel_themes = ''.join('<li><a href="%s.html">%s %s拼圖</a>：%s</li>' % (rid, theme_by_id[rid]['icon'], esc(theme_by_id[rid]['name']), esc(why)) for rid, why in RELATED_THEMES[c['id']])
     note = '<p class="note">%s</p>' % esc(t['note']) if t.get('note') else ''
     body = f"""<h1>{c['icon']} {esc(c['name'])}拼圖</h1>
 <p class="lead">{esc(t['intro'])}</p>
@@ -248,7 +258,9 @@ for idx, c in enumerate(themes):
 <h2>和孩子一起聊聊</h2>
 <p>拼完之後，可以試著問孩子：</p>
 <ul>{''.join('<li>%s</li>' % esc(x) for x in t['talk'])}</ul>
-<h2>其他主題</h2>
+<h2>你可能也喜歡</h2>
+<ul class="rel">{rel_themes}</ul>
+<h2>全部主題</h2>
 <ul class="chips">{others}</ul>
 <p>上一個主題：<a href="{prev_c['id']}.html">{esc(prev_c['name'])}</a>　下一個主題：<a href="{next_c['id']}.html">{esc(next_c['name'])}</a></p>"""
     desc = '免費的%s幼兒拼圖：%s可選 9、12、16 片。%s' % (c['name'], '、'.join(i['name'] for i in items[:5]) + ' 等 %d 張可愛圖片，' % len(items), t['learn'][0])
@@ -268,6 +280,12 @@ for c in themes:
         prev_i, next_i = items[k - 1], items[(k + 1) % len(items)]
         rel = ''.join('<li><a href="%s.html" title="%s拼圖"><figure><img src="../%s" alt="%s插圖（%s主題）" loading="lazy" decoding="async" width="200" height="200"><figcaption>%s</figcaption></figure></a></li>'
                       % (o['id'], esc(o['name']), o['src'], esc(o['name']), esc(c['name']), esc(o['name'])) for o in items if o is not im)
+        xr = related_images(im)
+        xrel = ''
+        if xr:
+            xrel = '<h2>其他主題裡的相關拼圖</h2><ul class="grid">' + ''.join(
+                '<li><a href="%s.html" title="%s拼圖（%s）"><figure><img src="../%s" alt="%s插圖（%s主題）" loading="lazy" decoding="async" width="200" height="200"><figcaption>%s</figcaption></figure></a></li>'
+                % (o['id'], esc(o['name']), esc(theme_by_id[o['cat']]['name']), o['src'], esc(o['name']), esc(theme_by_id[o['cat']]['name']), esc(o['name'])) for o in xr) + '</ul>'
         body = f"""<h1>{esc(nm)}拼圖</h1>
 <p class="lead">這是「{esc(c['name'])}」主題裡的「{esc(nm)}」。選擇 9、12 或 16 片，用手指把拼塊拖到對的位置，一起認識「{esc(nm)}」吧！免費、免註冊。</p>
 <p><a class="cta" href="../?img={im['id']}">▶ 開始玩「{esc(nm)}」拼圖</a></p>
@@ -283,6 +301,7 @@ for c in themes:
 <ul>{''.join('<li>%s</li>' % esc(x) for x in t['learn'])}</ul>
 <h2>同主題的其他拼圖</h2>
 <ul class="grid">{rel}</ul>
+{xrel}
 <p>上一張：<a href="{prev_i['id']}.html">{esc(prev_i['name'])}</a>　下一張：<a href="{next_i['id']}.html">{esc(next_i['name'])}</a>　回到<a href="../c/{c['id']}.html">{esc(c['name'])}主題</a></p>"""
         desc = '免費的「%s」幼兒拼圖，屬於「%s」主題，可選 9、12、16 片，免註冊、手機平板都能玩。學習重點：%s' % (nm, c['name'], t['learn'][0])
         write(path, page(path, '%s拼圖｜%s｜%s' % (nm, c['name'], NAME), desc, body,
@@ -328,12 +347,12 @@ parents = f"""<h1>家長須知</h1>
 <h2>依年齡調整難度（建議）</h2>
 <p>每個孩子的發展速度不同，以下僅供參考，請依孩子的狀況彈性調整。</p>
 <table>
-<thead><tr><th>年齡</th><th>片數</th><th>形狀</th><th>上方底圖</th></tr></thead>
+<thead><tr><th>年齡</th><th>片數</th><th>形狀</th><th>上方底圖</th><th>推薦主題</th></tr></thead>
 <tbody>
-<tr><td>約 2～3 歲</td><td>9 片</td><td>方塊</td><td>有底圖</td></tr>
-<tr><td>約 3～4 歲</td><td>9～12 片</td><td>拼圖形</td><td>有底圖</td></tr>
-<tr><td>約 4～5 歲</td><td>12～16 片</td><td>拼圖形</td><td>有底圖</td></tr>
-<tr><td>約 5～6 歲</td><td>16 片</td><td>拼圖形</td><td>無底圖（進階挑戰）</td></tr>
+<tr><td>約 2～3 歲</td><td>9 片</td><td>方塊</td><td>有底圖</td><td><a href="c/animal.html">可愛動物</a>、<a href="c/fruit.html">水果甜點</a></td></tr>
+<tr><td>約 3～4 歲</td><td>9～12 片</td><td>拼圖形</td><td>有底圖</td><td><a href="c/vehicle.html">交通工具</a>、<a href="c/life.html">日常生活</a></td></tr>
+<tr><td>約 4～5 歲</td><td>12～16 片</td><td>拼圖形</td><td>有底圖</td><td><a href="c/dino.html">遠古恐龍</a>、<a href="c/ocean.html">海洋生物</a></td></tr>
+<tr><td>約 5～6 歲</td><td>16 片</td><td>拼圖形</td><td>無底圖（進階挑戰）</td><td><a href="c/learn.html">學習認知</a>、<a href="c/space.html">宇宙星球</a></td></tr>
 </tbody></table>
 <p>設定方式：首頁右上角的 ⚙️ 可以選擇「拼圖形／方塊」與「有底圖／無底圖」；片數則在拼圖畫面上方切換 9、12、16 片。</p>
 <h2>親子共玩小技巧</h2>
@@ -414,12 +433,14 @@ seo = f"""<!-- SEO:BEGIN（由 tools/build_pages.py 自動產生，請勿手動�
        "operatingSystem": "Any", "inLanguage": "zh-Hant", "isAccessibleForFree": True, "audience": {"@type": "PeopleAudience", "suggestedMinAge": 2, "suggestedMaxAge": 6},
        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TWD"}}).strip()}
   <!-- SEO:END -->"""
+POPULAR = ['cat', 'dog', 'apple', 'strawberry', 'car', 'trex', 'whale', 'rocket', 'pizza', 'unicorn']
 foot = f"""<!-- FOOT:BEGIN（由 tools/build_pages.py 自動產生） -->
     <section class="site-intro">
       <h2>免費的幼兒拼圖遊戲，在玩中認識世界</h2>
       <p>「{esc(NAME)}」是專為 2～6 歲孩子設計的線上拼圖，不用註冊、不用安裝，手機、平板和電腦都能玩。孩子用手指把拼塊拖到對的位置，拼對會發出「叮」的聲音並固定住，放錯就輕輕彈回來，不會有挫折感。</p>
-      <p>網站目前有 {n_theme} 個主題、{n_img} 張可愛圖片，包括可愛動物、水果甜點、交通工具、遠古恐龍、海洋生物、宇宙星球等，每個主題的每一張圖都能選擇 9、12 或 16 片，並可切換拼圖形或方塊、決定要不要顯示提示底圖，讓不同年齡的孩子都能找到適合的難度。</p>
+      <p>網站目前有 {n_theme} 個主題、{n_img} 張可愛圖片，包括<a href="c/animal.html">可愛動物</a>、<a href="c/fruit.html">水果甜點</a>、<a href="c/vehicle.html">交通工具</a>、<a href="c/dino.html">遠古恐龍</a>、<a href="c/ocean.html">海洋生物</a>、<a href="c/space.html">宇宙星球</a>等，每個主題的每一張圖都能選擇 9、12 或 16 片，並可切換拼圖形或方塊、決定要不要顯示提示底圖，讓不同年齡的孩子都能找到適合的難度。</p>
       <p>在拼圖的同時，孩子也在認識名稱、顏色和形狀，練習專注力與手眼協調。想知道怎麼依年齡挑選難度，請看<a href="parents.html">家長須知</a>。</p>
+      <p class="popular"><strong>熱門拼圖：</strong>{' '.join('<a href="p/%s.html">%s拼圖</a>' % (i, esc(by_id[i]['name'])) for i in POPULAR)}</p>
     </section>
     <footer class="site-foot">
       <p class="topics"><strong>全部主題：</strong>{' '.join('<a href="c/%s.html">%s</a>' % (c['id'], esc(c['name'])) for c in themes)}</p>

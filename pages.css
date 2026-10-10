@@ -53,3 +53,6 @@ footer.foot p { margin:.5em 0; opacity:.85; }
 
 .hero { margin:16px auto; max-width:360px; text-align:center; font-weight:800; }
 .hero img { width:100%; height:auto; background:#fff; border-radius:24px; box-shadow:0 4px 0 var(--line); }
+
+.rel { padding-left:1.2em; }
+.rel li { margin:.3em 0; }

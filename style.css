@@ -149,3 +149,4 @@ h2 { margin:18px 0 8px; font-size:1.2rem; }
 .site-intro h2 { font-size:1.1rem; margin:.4em 0; }
 .site-intro p { margin:.5em 0; }
 .site-intro a { color:#8a4a12; }
+.site-intro .popular a { margin:0 6px; white-space:nowrap; }
