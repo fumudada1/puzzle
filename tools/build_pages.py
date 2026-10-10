@@ -426,6 +426,7 @@ seo = f"""<!-- SEO:BEGIN（由 tools/build_pages.py 自動產生，請勿手動�
   <meta name="description" content="{esc(home_desc)}">
   <link rel="canonical" href="{esc(BASE)}">
   <meta name="robots" content="index,follow">
+  {'<meta name="google-adsense-account" content="%s">' % esc(ADS_CLIENT) if ADS_CLIENT else ''}
   <meta name="theme-color" content="#FFF6DD">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_TW">
@@ -475,7 +476,8 @@ manifest = {
 }
 write('manifest.webmanifest', json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
 
-if ads_on:
+# ads.txt 只要有發佈者 ID 就產生（不論廣告是否啟用）；AdSense 審核與日後授權都需要它
+if ADS_CLIENT:
     write('ads.txt', 'google.com, %s, DIRECT, f08c47fec0942fa0\n' % ADS_CLIENT.replace('ca-pub-', 'pub-'))
 elif os.path.exists('ads.txt'):
     os.remove('ads.txt')
