@@ -257,12 +257,13 @@
       clip.appendChild(cpath);
       var img = svgEl('image', { href: src, preserveAspectRatio: 'none', 'clip-path': 'url(#' + id + ')' });
       var line = svgEl('path', { 'class': 'edge', fill: 'transparent' });
-      svg.appendChild(clip); svg.appendChild(img); svg.appendChild(line);
+      var shade = svgEl('path', { 'class': 'shade' });
+      svg.appendChild(shade); svg.appendChild(clip); svg.appendChild(img); svg.appendChild(line);
       stage.appendChild(svg);
 
       var slot = svgEl('path', {});
       if (state.jigsaw) slots.appendChild(slot);
-      var p = { slotPath: slot, el: svg, img: img, cpath: cpath, line: line, col: c, row: r, done: false,
+      var p = { slotPath: slot, shade: shade, el: svg, img: img, cpath: cpath, line: line, col: c, row: r, done: false,
         slot: order[state.pieces.length],
         s: { // 上、右、下、左 四條邊（0 = 外框平邊）
           t: j && r > 0 ? -tabV[r - 1][c] : 0,
@@ -338,7 +339,7 @@
       var el = p.el, d = piecePath(p, pad, c);
       el.setAttribute('width', B); el.setAttribute('height', B);
       el.style.width = el.style.height = B + 'px';
-      p.cpath.setAttribute('d', d); p.line.setAttribute('d', d);
+      p.cpath.setAttribute('d', d); p.line.setAttribute('d', d); p.shade.setAttribute('d', d);
       p.slotPath.setAttribute('d', piecePath(p, 0, c));
       p.slotPath.setAttribute('transform', 'translate(' + p.col * c + ' ' + p.row * c + ')');
       p.img.setAttribute('x', pad + ox - p.col * c); p.img.setAttribute('y', pad + oy - p.row * c);

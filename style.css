@@ -47,15 +47,17 @@ h2 { margin:18px 0 8px; font-size:1.2rem; }
 .board .cell { position:absolute; border:1px dashed rgba(180,150,80,.45); }
 
 .piece { position:absolute; overflow:visible; cursor:grab; z-index:10; touch-action:none;
-  filter: drop-shadow(0 3px 4px rgba(0,0,0,.35));
-  transition: left .25s ease, top .25s ease, transform .25s ease, filter .25s; }
+  transition: left .25s ease, top .25s ease, transform .25s ease; }   /* 不使用 CSS filter（iPad Safari 移動時會出現殘像），陰影改用下面的 SVG 形狀 */
+.piece .shade { fill:rgba(0,0,0,.28); transform:translate(0,4px); pointer-events:none; }   /* 陰影用 SVG 形狀畫，不用 filter */
 .piece { pointer-events:none; }   /* 只有拼塊的形狀本身可以抓，透明的角落不會擋住下面的拼塊 */
 .piece .edge { stroke:#fff; stroke-width:3; stroke-linejoin:round; pointer-events:fill; }
-.piece.drag { transition:none; z-index:100; cursor:grabbing; filter: drop-shadow(0 12px 12px rgba(0,0,0,.4)); }
-.piece.done { z-index:5; filter:none; cursor:default; pointer-events:none; }
+.piece.drag { transition:none; z-index:100; cursor:grabbing; }
+.piece.drag .shade { fill:rgba(0,0,0,.22); transform:translate(0,10px); }
+.piece.done { z-index:5; cursor:default; pointer-events:none; }
+.piece.done .shade { display:none; }
 .piece.done .edge { stroke:rgba(255,255,255,.55); stroke-width:1.5; pointer-events:none; }
-.piece.pop { animation: pop .35s ease; }
-@keyframes pop { 50% { filter:brightness(1.35); } }
+.piece.pop .edge { animation: pop .35s ease; }
+@keyframes pop { 50% { stroke-width:8; stroke:#fff6c8; } }
 
 /* 完成 */
 .win { position:fixed; inset:0; z-index:200; background:rgba(255,246,221,.92); display:flex;
