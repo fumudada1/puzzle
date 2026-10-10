@@ -8,7 +8,7 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--ink);
 
 /* 選單 */
 #menu { overflow-y:auto; padding:16px; text-align:center; touch-action: pan-y; }
-h1 { margin:8px 56px; font-size:clamp(1rem,5vw,2.2rem); line-height:1.3; white-space:nowrap; }
+h1, #catTitle { margin:8px 56px; font-size:clamp(1rem,5vw,2.2rem); line-height:1.3; white-space:nowrap; }
 h2 { margin:18px 0 8px; font-size:1.2rem; }
 .sizes { display:flex; gap:12px; justify-content:center; }
 .size-btn { font-size:1.8rem; font-weight:700; width:96px; height:96px; border-radius:24px;
@@ -96,7 +96,7 @@ h2 { margin:18px 0 8px; font-size:1.2rem; }
 .cat-card .ct { font-size:.9rem; opacity:.6; }
 .cat-card:active { transform: translateY(4px); box-shadow:none; }
 .gear.back { right:auto; left:10px; }
-#catView h1 { min-height:44px; display:flex; align-items:center; justify-content:center; }
+#catView #catTitle { min-height:44px; display:flex; align-items:center; justify-content:center; }
 #catView .gallery { margin-top:22px; }
 
 /* 首頁頁尾：主題連結與關於／家長須知／隱私權政策（遊戲畫面不顯示） */
@@ -125,7 +125,7 @@ h2 { margin:18px 0 8px; font-size:1.2rem; }
   .bar .btn { min-width:46px; height:46px; padding:0 8px; font-size:1.4rem; }
 }
 /* 類別頁標題兩側各留出按鈕的位置 */
-#catView h1 { margin-left:66px; margin-right:66px; }
+#catView #catTitle { margin-left:66px; margin-right:66px; }
 
 /* 按鈕列右側預留 🏠 的位置，內容在剩下的空間排版，不會蓋到它 */
 .bar { padding-right:76px; }
