@@ -19,6 +19,8 @@ ISSUES = cfg.get('issuesUrl', '')
 SHORT = cfg.get('shortName', NAME)
 ADSENSE = cfg.get('adsense') or {}
 ADS_CLIENT = (ADSENSE.get('client') or '').strip()
+# 圖片快取版本：新增圖片不用動；只有「修改了既有圖片的畫面」時才需要在 site.json 把它加一（v1 → v2），讓使用者重新下載
+IMG_CACHE_VER = str(cfg.get('imageCacheVersion') or 'v1')
 ADS_SLOTS = ADSENSE.get('slots') or {}
 import hashlib, glob
 
@@ -486,7 +488,7 @@ elif os.path.exists('ads.txt'):
 shell = ['index.html', 'about.html', 'parents.html', 'privacy.html', 'style.css', 'pages.css', 'app.js', 'images.js', 'ads.js',
          'ads-config.js', 'manifest.webmanifest'] + sorted(glob.glob('c/*.html')) + sorted(glob.glob('icons/*.png')) + ['icons/icon.svg']
 sw = open('tools/sw.template.js', encoding='utf-8').read()
-sw = (sw.replace('__SHELL_VERSION__', digest(shell)).replace('__IMG_VERSION__', digest(glob.glob('images/*.svg')))
+sw = (sw.replace('__SHELL_VERSION__', digest(shell)).replace('__IMG_VERSION__', IMG_CACHE_VER)
         .replace('__SHELL_FILES__', json.dumps(['./'] + shell, ensure_ascii=False)))
 write('sw.js', sw)
 
