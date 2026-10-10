@@ -3,7 +3,7 @@
 免費的幼兒拼圖遊戲：16 個主題、256 張自製插圖，可選 9／12／16 片，支援「拼圖形」與「方塊」。
 純 HTML／CSS／JavaScript，沒有框架、沒有後端；可安裝到手機主畫面（PWA），並支援離線。
 
-網站：<https://fumudada1.github.io/puzzle/>
+網站：<https://puzzle.jj-world.win/>（自訂網域設定：根目錄 `CNAME` 由 `build_pages.py` 依 `site.json` 的 `baseUrl` 產生；DNS 在 Cloudflare 設 CNAME `puzzle` → `fumudada1.github.io`，Proxy 先用 DNS only）
 
 ## 專案結構
 

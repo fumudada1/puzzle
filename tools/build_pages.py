@@ -410,6 +410,13 @@ write('privacy.html', page('privacy.html', '隱私權政策｜' + NAME, '%s 的�
 urls = [('', '1.0')] + [('about.html', '0.5'), ('parents.html', '0.6'), ('privacy.html', '0.3')] + [('c/%s.html' % c['id'], '0.8') for c in themes] + [('p/%s.html' % i['id'], '0.6') for c in themes for i in by_cat[c['id']]]
 write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
       ''.join('  <url><loc>%s</loc><lastmod>%s</lastmod><priority>%s</priority></url>\n' % (esc(BASE + u), TODAY, p) for u, p in urls) + '</urlset>\n')
+# 自訂網域：GitHub Pages 需要根目錄有 CNAME 檔（內容為網域；baseUrl 若不是自訂網域就不產生）
+from urllib.parse import urlparse
+_host = urlparse(BASE).hostname or ''
+if _host and not _host.endswith('github.io'):
+    write('CNAME', _host + '\n')
+elif os.path.exists('CNAME'):
+    os.remove('CNAME')
 write('robots.txt', 'User-agent: *\nAllow: /\n\nSitemap: %ssitemap.xml\n' % BASE)
 
 # ---------- 更新 index.html 的 SEO 區塊 ----------
