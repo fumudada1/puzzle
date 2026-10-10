@@ -86,8 +86,56 @@
     return out;
   }
 
+  /* ---------- 網址：每個畫面都有自己的網址，瀏覽器的上一頁／下一頁也能用 ----------
+   *  首頁  /          類別頁  ?cat=類別代號          拼圖畫面  ?img=圖片代號
+   *  how：'push' 新增一筆瀏覽紀錄；'replace' 取代目前這筆；'none' 只更新標題（來自上一頁或網址直達） */
+  var depth = 0;                                   // 站內第幾層（0 = 進站時的第一個畫面）
+  var homeTitle = document.title, siteName = homeTitle.split('｜')[0];
+  function viewUrl(v, p) { return v === 'cat' ? '?cat=' + encodeURIComponent(p) : v === 'game' ? '?img=' + encodeURIComponent(p) : location.pathname; }
+  function viewTitle(v, p) {
+    if (v === 'home') return homeTitle;
+    var name = v === 'game' ? IMAGES.filter(function (i) { return i.id === p; })[0].name : CATS.filter(function (c) { return c.id === p; })[0].name;
+    return name + '拼圖｜' + siteName;
+  }
+  function commit(v, p, how) {
+    var title = viewTitle(v, p);
+    if (how === 'push') { depth++; history.pushState({ app: 1, n: depth }, '', viewUrl(v, p)); }
+    else if (how === 'replace') history.replaceState({ app: 1, n: depth }, '', viewUrl(v, p));
+    document.title = title;
+  }
+  // 返回：站內有上一頁就用瀏覽器的上一頁（畫面由 popstate 切換）；否則（例如從搜尋結果直接進來）改為切到指定畫面
+  function goBack(fallback) { if (depth > 0) history.back(); else fallback(); }
+  function parseQuery() {
+    var q = {};
+    location.search.replace(/^\?/, '').split('&').forEach(function (p) {
+      var kv = p.split('=');
+      if (kv[0]) q[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1] || '');
+    });
+    return q;
+  }
+  // 依目前網址顯示對應畫面（進站、重新整理、上一頁／下一頁都走這裡；不新增瀏覽紀錄）
+  function render() {
+    var q = parseQuery(), i, valid = false;
+    var fromGame = !game.classList.contains('hidden');
+    if (q.img) for (i = 0; i < IMAGES.length; i++) if (IMAGES[i].id === q.img) {
+      valid = true; openCat(IMAGES[i].cat, 'none'); start(i, 'none'); break;
+    }
+    if (!valid && q.cat && CATS.some(function (c) { return c.id === q.cat; })) {
+      valid = true; openCat(q.cat, 'none');
+      if (fromGame) menu.scrollTop = state.menuScroll;          // 從拼圖按上一頁回來：回到剛才捲動的位置
+    }
+    if (!valid) {
+      showHome('none');
+      if (location.search) history.replaceState({ app: 1, n: depth }, '', location.pathname);   // 無效的網址參數：清掉
+    }
+  }
+  window.addEventListener('popstate', function (e) { depth = (e.state && e.state.n) || 0; render(); });
+  // 顯示選單層（類別／首頁），並收起拼圖畫面與完成畫面
+  function showMenuLayer() { game.classList.add('hidden'); win.classList.add('hidden'); menu.classList.remove('hidden'); }
+
   // 類別頁：該類別的圖片，點圖片直接進拼圖
-  function openCat(id) {
+  function openCat(id, how) {
+    showMenuLayer();
     state.cat = id;
     var c = CATS.filter(function (x) { return x.id === id; })[0];
     $('catTitle').textContent = c.icon + ' ' + c.name;
@@ -97,13 +145,14 @@
       b.className = 'thumb';
       b.innerHTML = '<img src="' + im.src + '" alt="' + im.name + '插圖" width="200" height="200" loading="lazy" decoding="async"><span>' + im.name + '</span>';
       b.setAttribute('aria-label', '玩「' + im.name + '」拼圖');
-      b.onclick = function () { state.menuScroll = menu.scrollTop; start(i); };
+      b.onclick = function () { state.menuScroll = menu.scrollTop; start(i, 'push'); };
       gal.appendChild(b);
     });
     $('homeView').classList.add('hidden'); $('catView').classList.remove('hidden');
     setCatChrome(true);                 // 類別頁：右上角顯示 🏠（設定鈕只在首頁）
     menu.scrollTop = 0;
     if (window.PuzzleAds) PuzzleAds.show('category');
+    commit('cat', id, how || 'push');
   }
   // 右上角：首頁 = ⚙️ 設定；類別頁 = 🏠。用 hidden 屬性由程式決定，
   // 這樣即使瀏覽器暫時拿到舊版樣式檔（更新途中的新舊混搭），也不會出現兩顆按鈕疊在一起。
@@ -112,19 +161,19 @@
     $('btnSettings').hidden = inCat;
     $('btnHomeMenu').hidden = !inCat;
   }
-  function showHome() {
+  function showHome(how) {
+    showMenuLayer();
     $('catView').classList.add('hidden'); $('homeView').classList.remove('hidden');
     setCatChrome(false);
     menu.scrollTop = 0;
     if (window.PuzzleAds) PuzzleAds.show('home');
+    commit('home', '', how || 'push');
   }
-  $('btnCatBack').onclick = showHome;
-  // 回首頁：從任何畫面（類別頁、拼圖、完成畫面）一步回到首頁的主題列表
-  function goHome() {
-    win.classList.add('hidden'); game.classList.add('hidden'); menu.classList.remove('hidden');
-    showHome();
-  }
-  $('btnHomeMenu').onclick = showHome;
+  // ⬅️：站內有上一頁就回上一頁，沒有（直接從連結進來）就回首頁
+  $('btnCatBack').onclick = function () { goBack(function () { showHome('replace'); }); };
+  // 🏠：從任何畫面（類別頁、拼圖、完成畫面）一步回到首頁的主題列表
+  function goHome() { showHome('push'); }
+  $('btnHomeMenu').onclick = goHome;
   $('btnHomeGame').onclick = goHome;
   $('btnHomeWin').onclick = goHome;
   $('btnHomeGame').hidden = false; $('btnHomeWin').hidden = false;   // 事件都接好了才顯示
@@ -153,7 +202,7 @@
     });
   }
 
-  function start(imgIndex) {
+  function start(imgIndex, how) {
     state.imgIndex = imgIndex;
     buildGameSizes();
     menu.classList.add('hidden'); game.classList.remove('hidden'); win.classList.add('hidden');
@@ -164,6 +213,7 @@
     state.rows = n / state.cols;
     buildPieces();
     layout(true);
+    commit('game', IMAGES[imgIndex].id, how);
   }
 
   var NS = 'http://www.w3.org/2000/svg';
@@ -346,14 +396,17 @@
   }
 
   /* ---------- 按鈕 ---------- */
-  $('btnBack').onclick = function () { game.classList.add('hidden'); menu.classList.remove('hidden'); menu.scrollTop = state.menuScroll; };
+  // ⬅️：回到剛才的類別頁（上一頁）；若是直接從連結進來沒有上一頁，就開啟這張圖所屬的類別
+  $('btnBack').onclick = function () {
+    goBack(function () { openCat(IMAGES[state.imgIndex].cat, 'replace'); menu.scrollTop = state.menuScroll; });
+  };
   $('btnShuffle').onclick = function () { start(state.imgIndex); };
   $('btnHint').onclick = function () { board.classList.add('peek'); setTimeout(function () { board.classList.remove('peek'); }, 2000); };
   $('btnSound').onclick = function () { state.soundOn = !state.soundOn; this.textContent = state.soundOn ? '🔊' : '🔇'; };
   $('btnAgain').onclick = function () { start(state.imgIndex); };
   $('btnNext').onclick = function () {
     var list = indexesInCat(), at = list.indexOf(state.imgIndex);
-    start(list.length ? list[(at + 1) % list.length] : (state.imgIndex + 1) % IMAGES.length);
+    start(list.length ? list[(at + 1) % list.length] : (state.imgIndex + 1) % IMAGES.length, 'replace');   // 換一張：取代目前這筆，上一頁仍回到類別頁
   };
 
   var rt; window.addEventListener('resize', function () {
@@ -403,18 +456,7 @@
     }).catch(function () { btn.disabled = false; st.textContent = '目前無法下載，請稍後再試。'; });
   };
 
-  // 網址直達：?cat=類別代號 開啟該類別；?img=圖片代號 直接開始拼（給搜尋結果與主題頁的連結使用）
-  (function () {
-    var q = {};
-    location.search.replace(/^\?/, '').split('&').forEach(function (p) {
-      var kv = p.split('=');
-      if (kv[0]) q[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1] || '');
-    });
-    if (q.img) {
-      for (var i = 0; i < IMAGES.length; i++) {
-        if (IMAGES[i].id === q.img) { openCat(IMAGES[i].cat); start(i); return; }
-      }
-    }
-    if (q.cat && CATS.some(function (c) { return c.id === q.cat; })) openCat(q.cat);
-  })();
+  // 進站：標記第一筆瀏覽紀錄，並依網址顯示對應畫面（?cat=… 開類別、?img=… 直接開始拼，給搜尋結果與主題頁連結使用）
+  history.replaceState({ app: 1, n: 0 }, '', location.href);
+  render();
 })();
