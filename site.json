@@ -3,13 +3,13 @@
   "baseUrl": "https://puzzle.jj-world.win/",
   "contactEmail": "contact@jj-world.win",
   "issuesUrl": "https://github.com/fumudada1/puzzle/issues",
-  "adsEnabled": false,
+  "adsEnabled": true,
   "adsense": {
     "client": "ca-pub-3878943765442417",
     "slots": {
-      "home": "",
-      "category": "",
-      "theme": ""
+      "home": "1133908177",
+      "category": "3456819188",
+      "theme": "6521966225"
     }
   },
   "imageCacheVersion": "v1",

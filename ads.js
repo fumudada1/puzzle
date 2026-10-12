@@ -17,7 +17,7 @@
     window.adsbygoogle = window.adsbygoogle || [];
     // 兒童網站：只要非個人化廣告
     window.adsbygoogle.requestNonPersonalizedAds = 1;
-    // TODO（啟用前必做）：依 Google 目前的文件加上「兒童導向處理（TFCD）」設定，並在 AdSense 後台把本網站標示為兒童導向。
+    // 兒童導向：除了這裡每個廣告都加上 data-tag-for-child-directed-treatment="1"，也請在 AdSense 後台把本網站標示為兒童導向
     var s = document.createElement('script');
     s.async = true; s.crossOrigin = 'anonymous';
     s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(cfg.client);
@@ -35,7 +35,7 @@
     if (el.closest('#game')) return;                   // 保險：遊戲畫面裡絕不放
     done[name] = true; loadLibrary();
     el.innerHTML = '<div class="ad-label">廣告</div><ins class="adsbygoogle" style="display:block" data-ad-client="' + cfg.client +
-      '" data-ad-slot="' + slotId + '" data-ad-format="horizontal" data-full-width-responsive="false"></ins>';
+      '" data-ad-slot="' + slotId + '" data-ad-format="horizontal" data-full-width-responsive="false" data-tag-for-child-directed-treatment="1"></ins>';
     el.hidden = false;
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
   }

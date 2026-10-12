@@ -6,7 +6,7 @@
  *  - 遊戲本體的版本號由檔案內容雜湊決定；內容一變，舊快取會自動清掉。
  *  - 圖片快取名稱固定（site.json 的 imageCacheVersion）：新增圖片不會清掉舊圖片；只有修改既有圖片時才需要升版。
  */
-const SHELL_CACHE = 'puzzle-shell-20b7ec1a9c';
+const SHELL_CACHE = 'puzzle-shell-d40fe71276';
 const IMG_CACHE = 'puzzle-img-v1';
 const SHELL_FILES = ["./", "index.html", "about.html", "parents.html", "privacy.html", "style.css", "pages.css", "app.js", "images.js", "ads.js", "ads-config.js", "manifest.webmanifest", "c/animal.html", "c/bug.html", "c/dino.html", "c/festival.html", "c/food.html", "c/fruit.html", "c/job.html", "c/learn.html", "c/life.html", "c/music.html", "c/nature.html", "c/ocean.html", "c/space.html", "c/sport.html", "c/story.html", "c/vehicle.html", "icons/apple-touch-icon.png", "icons/favicon-32.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/icon.svg"];
 
