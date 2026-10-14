@@ -224,6 +224,7 @@ def write(path, text):
     open(path, 'w', encoding='utf-8').write(text)
 
 n_theme, n_img = len(themes), len([i for i in imgs])
+MORE_IMG = '超過%d張' % (n_img // 50 * 50)     # 例：256 張 → 「超過250張」
 by_id = {i['id']: i for i in imgs}
 theme_by_id = {c['id']: c for c in themes}
 def related_images(im, limit=6):
@@ -265,8 +266,8 @@ for idx, c in enumerate(themes):
 <h2>全部主題</h2>
 <ul class="chips">{others}</ul>
 <p>上一個主題：<a href="{prev_c['id']}.html">{esc(prev_c['name'])}</a>　下一個主題：<a href="{next_c['id']}.html">{esc(next_c['name'])}</a></p>"""
-    desc = '免費的%s幼兒拼圖：%s可選 4、9、16、25 片。%s' % (c['name'], '、'.join(i['name'] for i in items[:5]) + ' 等 %d 張可愛圖片，' % len(items), t['learn'][0])
-    write('c/%s.html' % c['id'], page('c/%s.html' % c['id'], '%s拼圖｜%s' % (c['name'], NAME), desc, body,
+    desc = '完全免費的%s幼兒拼圖遊戲：%s等 %d 張可愛圖片免費玩，免註冊、免下載，手機平板都能玩。%s' % (c['name'], '、'.join(i['name'] for i in items[:5]), len(items), t['learn'][0])
+    write('c/%s.html' % c['id'], page('c/%s.html' % c['id'], '免費%s拼圖遊戲｜幼兒線上玩，完全免費' % c['name'], desc, body,
           crumbs=[('首頁', '../'), ('主題', None), (c['name'], None)], ad='theme',
           extra_head=ld(crumb_ld([('首頁', BASE), (c['name'] + '拼圖', BASE + 'c/%s.html' % c['id'])]),
                         {"@type": "CollectionPage", "name": '%s拼圖' % c['name'], "url": BASE + 'c/%s.html' % c['id'], "inLanguage": "zh-Hant",
@@ -305,8 +306,8 @@ for c in themes:
 <ul class="grid">{rel}</ul>
 {xrel}
 <p>上一張：<a href="{prev_i['id']}.html">{esc(prev_i['name'])}</a>　下一張：<a href="{next_i['id']}.html">{esc(next_i['name'])}</a>　回到<a href="../c/{c['id']}.html">{esc(c['name'])}主題</a></p>"""
-        desc = '免費的「%s」幼兒拼圖，屬於「%s」主題，可選 4、9、16、25 片，免註冊、手機平板都能玩。學習重點：%s' % (nm, c['name'], t['learn'][0])
-        write(path, page(path, '%s拼圖｜%s｜%s' % (nm, c['name'], NAME), desc, body,
+        desc = '完全免費的「%s」幼兒拼圖，屬於「%s」主題，免註冊、免下載，手機平板都能玩。學習重點：%s' % (nm, c['name'], t['learn'][0])
+        write(path, page(path, '免費%s拼圖｜幼兒線上拼圖遊戲，免註冊（%s）' % (nm, c['name']), desc, body,
               crumbs=[('首頁', '../'), (c['name'], '../c/%s.html' % c['id']), (nm, None)],
               extra_head=ld(crumb_ld([('首頁', BASE), (c['name'] + '拼圖', BASE + 'c/%s.html' % c['id']), (nm + '拼圖', url)]),
                             {"@type": "ImageObject", "contentUrl": BASE + im['src'], "name": nm + '插圖', "description": '%s插圖（%s主題）' % (nm, c['name']),
@@ -332,7 +333,7 @@ about = f"""<h1>關於我們</h1>
 <h2>聯絡我們</h2>
 <p>如果您有建議、發現問題，或希望我們增加某個主題，歡迎聯絡我們。</p>
 <p>{contact_html()}</p>"""
-write('about.html', page('about.html', '關於我們｜' + NAME, '%s 是免費的幼兒拼圖遊戲，提供 %d 個主題、%d 張可愛圖片，適合 2～6 歲孩子在遊戲中學習。' % (NAME, n_theme, n_img), about,
+write('about.html', page('about.html', '關於我們｜完全免費的幼兒拼圖遊戲', '%s 是完全免費的幼兒拼圖遊戲，免註冊、免下載，提供%s可愛圖片，適合 2～6 歲孩子在遊戲中學習。' % (NAME, MORE_IMG), about,
       crumbs=[('首頁', './'), ('關於我們', None)]))
 
 # ---------- 家長須知 ----------
@@ -376,7 +377,7 @@ parents = f"""<h1>家長須知</h1>
 <dt>圖片可以拿去使用嗎？</dt><dd>網站圖片為自製插圖，以 CC0 公眾領域貢獻釋出，可自由使用。</dd>
 <dt>我想要新的主題？</dt><dd>歡迎在<a href="about.html">關於我們</a>頁面留下聯絡方式與建議。</dd>
 </dl>"""
-write('parents.html', page('parents.html', '家長須知｜' + NAME, '幼兒拼圖怎麼玩、依年齡選擇 4／9／16／25 片與拼圖形或方塊、螢幕使用時間提醒與常見問題，給陪伴孩子的家長。', parents,
+write('parents.html', page('parents.html', '免費幼兒拼圖怎麼選？依年齡選 4、9、16、25 片｜家長須知', '完全免費的幼兒拼圖怎麼玩、依年齡選擇 4／9／16／25 片與拼圖形或方塊、螢幕使用時間提醒與常見問題，給陪伴孩子的家長。', parents,
       crumbs=[('首頁', './'), ('家長須知', None)]))
 
 # ---------- 隱私權政策 ----------
@@ -422,9 +423,10 @@ elif os.path.exists('CNAME'):
 write('robots.txt', 'User-agent: *\nAllow: /\n\nSitemap: %ssitemap.xml\n' % BASE)
 
 # ---------- 更新 index.html 的 SEO 區塊 ----------
-home_desc = '免費的幼兒拼圖遊戲：%d 個主題、%d 張可愛圖片，可選 4、9、16、25 片，支援拼圖形與方塊。適合 2～6 歲孩子認識動物、水果、交通工具、恐龍、宇宙等，免註冊、手機平板電腦都能玩。' % (n_theme, n_img)
+home_desc = '完全免費的幼兒拼圖遊戲：%s可愛圖片免費拼圖，免註冊、免下載，手機平板電腦都能線上玩。適合 2～6 歲孩子認識動物、水果、交通工具、恐龍、宇宙等。' % MORE_IMG
+HOME_TITLE = '完全免費幼兒拼圖遊戲｜免註冊線上玩｜' + NAME
 seo = f"""<!-- SEO:BEGIN（由 tools/build_pages.py 自動產生，請勿手動修改） -->
-  <title>{esc(NAME)}｜免費幼兒拼圖遊戲（4／9／16／25 片）</title>
+  <title>{esc(HOME_TITLE)}</title>
   <meta name="description" content="{esc(home_desc)}">
   <link rel="canonical" href="{esc(BASE)}">
   <meta name="robots" content="index,follow">
@@ -433,10 +435,10 @@ seo = f"""<!-- SEO:BEGIN（由 tools/build_pages.py 自動產生，請勿手動�
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_TW">
   <meta property="og:site_name" content="{esc(NAME)}">
-  <meta property="og:title" content="{esc(NAME)}｜免費幼兒拼圖遊戲">
+  <meta property="og:title" content="{esc(HOME_TITLE)}">
   <meta property="og:description" content="{esc(home_desc)}">
   <meta property="og:url" content="{esc(BASE)}">
-  {og_tags(NAME + '｜免費幼兒拼圖遊戲', home_desc, BASE, 'og/home.png').strip().replace(chr(10), chr(10) + '  ')}
+  {og_tags(HOME_TITLE, home_desc, BASE, 'og/home.png').strip().replace(chr(10), chr(10) + '  ')}
   {pwa_head('').strip().replace(chr(10), chr(10) + '  ')}
   {ld({"@type": "WebSite", "name": NAME, "url": BASE, "inLanguage": "zh-Hant", "description": home_desc},
       {"@type": ["WebApplication", "Game"], "name": NAME, "url": BASE, "applicationCategory": "GameApplication", "genre": "Puzzle",

@@ -90,12 +90,12 @@
    *  首頁  /          類別頁  ?cat=類別代號          拼圖畫面  ?img=圖片代號
    *  how：'push' 新增一筆瀏覽紀錄；'replace' 取代目前這筆；'none' 只更新標題（來自上一頁或網址直達） */
   var depth = 0;                                   // 站內第幾層（0 = 進站時的第一個畫面）
-  var homeTitle = document.title, siteName = homeTitle.split('｜')[0];
+  var homeTitle = document.title, siteName = homeTitle.split('｜').pop();   // 網頁標題最後一段是網站名稱
   function viewUrl(v, p) { return v === 'cat' ? '?cat=' + encodeURIComponent(p) : v === 'game' ? '?img=' + encodeURIComponent(p) : location.pathname; }
   function viewTitle(v, p) {
     if (v === 'home') return homeTitle;
     var name = v === 'game' ? IMAGES.filter(function (i) { return i.id === p; })[0].name : CATS.filter(function (c) { return c.id === p; })[0].name;
-    return name + '拼圖｜' + siteName;
+    return '免費' + name + '拼圖｜' + siteName;
   }
   function commit(v, p, how) {
     var title = viewTitle(v, p);
